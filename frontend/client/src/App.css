@@ -1,0 +1,11 @@
+.err-visible {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 1.2s linear;
+}
+
+.err-hidden {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s 1.2s, opacity 1.2s linear;
+}
