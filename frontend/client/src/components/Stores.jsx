@@ -1,5 +1,15 @@
 import React from "react";
-import { login } from "../actions";
+import { login, port } from "../actions";
+import axios from "axios";
+
+const checkStoresDiv = setInterval(async () => {
+  if (document.getElementById("storesList")) {
+    clearInterval(checkStoresDiv);
+    await axios.get(`http://${window.location.hostname}:${port}/getStores`).then(data => {
+      document.getElementById("storesList").innerHTML = `${data.data}`;
+    });
+  }
+}, 100);
 
 function App() {
   return (
@@ -83,7 +93,9 @@ function App() {
         </div>
         <hr />
       </header>
-      Σχετικά με εμάς
+
+      <div id="storesList" className="place-items-center py-16 grid gap-8 columns-3"></div>
+
     </div>
   );
 };

@@ -9,7 +9,9 @@ import {
 
 import Home from "./components/Home";
 import Register from "./components/Register";
-import Products from "./components/Products";
+import Logout from "./components/Logout";
+import Stores from "./components/Stores";
+import Store from "./components/Store";
 import About from "./components/About";
 
 function App() {
@@ -25,8 +27,13 @@ function App() {
                     />
 
                     <Route
-                        path="/products"
-                        element={<Products />}
+                        path="/stores"
+                        element={<Stores />}
+                    />
+
+                    <Route
+                        path="/store"
+                        element={<Store />}
                     />
 
                     <Route
@@ -38,7 +45,12 @@ function App() {
                         path="/register"
                         element={<Register />}
                     />
-                    
+
+                    <Route
+                        path="/logout"
+                        element={<Logout />}
+                    />
+
                     <Route
                         path="*"
                         element={<Navigate to="/" />}
