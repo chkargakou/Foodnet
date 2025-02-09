@@ -1,3 +1,10 @@
+using System.Configuration;
+using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.Connections;
+using DotNetEnv;
+
+Env.Load();
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -13,15 +20,14 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
-
-
 app.MapGet("/", () =>
 {
 
-    return "skibidi skibidi hawk tuah hawk";
+    return "5";
 })
 
 .WithName("basicresponse");
+
 app.UseAuthorization();
 app.UseHttpsRedirection();
 app.MapControllers();
