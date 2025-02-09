@@ -1,6 +1,6 @@
 namespace Web
 {
-    public class RegisterResult : Register
+    public class UserResult : User
     {
         public long UUID { get; set; }
     }
