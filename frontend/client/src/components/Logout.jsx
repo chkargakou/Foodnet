@@ -4,8 +4,8 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        {document.cookie = 'SessionID=; Max-Age=-99999999;'}
         {window.location.replace("/")}
+        {document.cookie = 'SessionID=; Max-Age=-99999999;'}
       </header>
     </div>
   );

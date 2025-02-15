@@ -47,7 +47,7 @@ app.post('/register', async (req, res) => {
 
             let userCookie = `${token()}|${username}|${Date.now()}`;
 
-            res.cookie("SessionID", userCookie, { maxAge: 20 * 60 * 1000 })
+            res.cookie("SessionID", userCookie, { maxAge: 120 * 60 * 1000 })
             return res.sendStatus(200);
         }).catch(err => res.send({ err }));
 });
@@ -75,7 +75,7 @@ app.post('/login', async (req, res) => {
 
                 let userCookie = `${token()}|${username}|${Date.now()}`;
 
-                res.cookie("SessionID", userCookie, { maxAge: 20 * 60 * 1000 })
+                res.cookie("SessionID", userCookie, { maxAge: 120 * 60 * 1000 })
                 return res.sendStatus(200);
             }
         }).catch(err => res.send({ err }));
@@ -133,13 +133,32 @@ app.get('/getProducts', async (req, res) => {
             <h2 id="${i}title" class="card-title">${body[i].productname}</h2>
             <p>${body[i].price}</p>
             <div class="card-actions justify-end">
-                <button class="btn btn-primary">Πάρ' το!</button>
+                <button id="${i}button" onClick="{(() => { let cart = localStorage.getItem('myCart') || ''; localStorage.setItem('myCart', cart + '${body[i].productname}|${body[i].price},'); document.location.reload(true) })() }" class="btn btn-primary">Πάρ' το!</button>
             </div>
           </div>
         </div>
         `
     }
+    
     res.send(productsList);
+});
+
+app.get('/getProduct', async (req, res) => {
+    const { body } = await superagent
+        .get(`http://${process.env.API_IP}:5145/register/getproducts`).send({ Storename: `${req.query.name}` });
+
+    if (body.length < 1) return res.send("Αυτό το μαγαζί δεν έχει προϊόντα ακόμα.")
+    else if (!req.query.q) return res.send("NO_QUERY");
+
+    let product;
+
+    for (let i = 0; i < body.length; i++) {
+        if (body[i].productname == req.query.q) {
+            // Product result object
+            product = { "name": body[i].productname, "price": body[i].price }
+            return res.send(product);
+        }
+    }
 });
 
 app.listen(port, () => {

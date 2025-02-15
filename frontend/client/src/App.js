@@ -12,6 +12,7 @@ import Register from "./components/Register";
 import Logout from "./components/Logout";
 import Stores from "./components/Stores";
 import Store from "./components/Store";
+import Cart from "./components/Cart";
 import About from "./components/About";
 
 function App() {
@@ -34,6 +35,11 @@ function App() {
                     <Route
                         path="/store"
                         element={<Store />}
+                    />
+
+                    <Route
+                        path="/Cart"
+                        element={<Cart />}
                     />
 
                     <Route
