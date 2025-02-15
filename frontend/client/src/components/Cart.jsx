@@ -15,10 +15,16 @@ if (cUser) {
 
             for (let i = 0; i < unique.length; i++) {
                 // Initialization
-                unique[i][0] = 0;
+                unique[i, "cost"] = 0;
+                unique[i, "count"] = 0;
+
                 for (let j = 0; j < cart.length; j++) {
-                    if (unique[i] == cart[j][0]) unique[i][0]++;
+                    if (unique[i] == cart[j][0]) {
+                        unique[i, "cost"] += parseFloat(cart[j][1]);
+                        unique[i, "count"]++;
+                    }
                 }
+                console.log(`${unique[i]} ${unique[i, "count"]} ${Math.round(unique[i, "cost"] * 100) / 100}`);
                 // TODO: Make html code for each ordered item and use unique[i][0] as the item count for each unique[i] inside this loop
             }
 
