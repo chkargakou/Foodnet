@@ -3,12 +3,12 @@ import { login, port } from "../actions";
 import axios from "axios";
 
 const checkProductsDiv = setInterval(async () => {
-    if (document.getElementById("productsList")) {
-        clearInterval(checkProductsDiv);
-        await axios.get(`http://${window.location.hostname}:${port}/getProducts${window.location.search}`).then(data => {
-            document.getElementById("productsList").innerHTML = `${data.data}`;
-        });
-    }
+  if (document.getElementById("productsList")) {
+    clearInterval(checkProductsDiv);
+    await axios.get(`http://${window.location.hostname}:${port}/getProducts${window.location.search}`).then(data => {
+      document.getElementById("productsList").innerHTML = `${data.data}`;
+    });
+  }
 }, 100);
 
 function App() {
