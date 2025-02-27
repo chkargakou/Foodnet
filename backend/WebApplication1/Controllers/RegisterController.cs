@@ -149,7 +149,7 @@ namespace Web.Controllers
         public IActionResult AddStore(AddStore addStore)
         {
             using var db = Connection;
-            var sql = "select * from users where username = @Username and role = 'owner';"; ;
+            var sql = "select * from users where username = @Username and role = 'owner';";
             db.Query(sql, new { Username = addStore.OwnerName });
             if (sql == null)
             {
@@ -166,7 +166,8 @@ namespace Web.Controllers
             count = db.ExecuteScalar<int>(countSql);
 
 
-            var insertSql = @"insert into stores (id, name, location, owner) VALUES (@Id, @Name, @Location, @Owner);";
+            var insertSql = @"insert into stores (id, name, location, owner,regdate) VALUES (@Id, @Name, @Location, @Owner,@regdate);";
+            string regdate = DateTime.UtcNow.ToString("yyyy-MM-dd");
             try
             {
                 db.Execute(insertSql, new
@@ -198,17 +199,15 @@ namespace Web.Controllers
             return Ok("User changed to owner");
         }
         [HttpPost("addorder")]
-        public IActionResult ConvertToOwner(Order order)
+        public IActionResult AddOrder(Order order)
         {
             using var db = Connection;
-            var countSql = "select count(*) from order;";
-            count = db.ExecuteScalar<int>(countSql);
 
-            var sql = "insert into orders(id,storename,productlist,ordervalue,username,address)values(@id,@storeName,@productlist,@ordervalue,@username,@address);";
+            var sql = "insert into orders(id,storename,productlist,ordervalue,username,address,isCompleted,telNumber,deliveryOrders,postNumber,posOption)values(@id,@storeName,@productlist,@ordervalue,@username,@address,@isCompleted,@telNumber,@deliveryOrders,@postNumber,@posOption);";
             try
             {
 
-                db.Query(sql, new { id = count + 1,storename = order.StoreName , productlist = order.ProductList ,ordervalue = order.OrderValue ,username = order.Username , address = order.Address});
+                db.Query(sql, new {id = 0, storename = order.StoreName , productlist = order.ProductList ,ordervalue = order.OrderValue ,username = order.Username , address = order.Address, isCompleted = false ,telNumber = order.TelNumber , deliveryOrders = order.DeliveryOrders , postNumber = order.PostNumber , posOption = order.POSOption});
                 return Ok("order added");
             }
             catch (Exception ex)
@@ -218,13 +217,22 @@ namespace Web.Controllers
         }
 
         [HttpGet("getorders")]
-        public ActionResult<IEnumerable<Order>> Getorders(User user, int page = 1, int size = 1000)
+        public ActionResult<IEnumerable<Order>> GetOrders(User user, int page = 1, int size = 1000)
         {
             using var db = Connection;
-            string sql = "SELECT * FROM orders where storename = @storename or username = @username LIMIT @Size OFFSET @Offset;";
+            string sql = "select * from orders where storename = @storename or username = @username LIMIT @Size OFFSET @Offset;";
             var orders = db.Query<Order>(sql, new { storename = user.Username,username = user.Username, Size = size, Offset = (page - 1) * size }).ToList();
 
             return Ok(orders);
         }
+
+        [HttpPost("completeorder")]
+        public IActionResult CompleteOrder(int id)
+        {
+            using var db = Connection;
+            string sql = "update orders set is_delivered = true where id = @orderID;";
+            var orders = db.Query(sql,new {orderId = id});
+            return Ok("order has been completed");
+        }  
     }
 }

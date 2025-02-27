@@ -1,6 +1,7 @@
-using System.Configuration;
-using System.Runtime.CompilerServices;
-using Microsoft.AspNetCore.Connections;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using DotNetEnv;
 
 Env.Load();
@@ -8,27 +9,22 @@ Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
-
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    
 }
-app.MapGet("/", () =>
-{
 
-    return "5";
-})
-
-.WithName("basicresponse");
-
-app.UseAuthorization();
 app.UseHttpsRedirection();
+app.UseAuthorization();
 app.MapControllers();
+
+app.MapGet("/", () => "5")
+   .WithName("basicresponse");
+
 app.Run();
