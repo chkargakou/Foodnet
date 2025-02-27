@@ -10,6 +10,7 @@ import {
 import Home from "./components/Home";
 import Register from "./components/Register";
 import Logout from "./components/Logout";
+import Success from "./components/Success";
 import Stores from "./components/Stores";
 import Store from "./components/Store";
 import Cart from "./components/Cart";
@@ -55,6 +56,11 @@ function App() {
                     <Route
                         path="/logout"
                         element={<Logout />}
+                    />
+
+                    <Route
+                        path="/success"
+                        element={<Success />}
                     />
 
                     <Route

@@ -1,5 +1,5 @@
 import React from "react";
-import { login, port, basket, cUser, cartAdd } from "../actions";
+import { login, port } from "../actions";
 import axios from "axios";
 
 const checkProductsDiv = setInterval(async () => {

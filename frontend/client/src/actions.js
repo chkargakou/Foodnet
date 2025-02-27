@@ -8,26 +8,90 @@ export let cUser = c[1];
 let cStamp = c[2];
 
 export const getCart = () => {
-    let total = 0;
-    let len = 0;
     let items = localStorage.getItem('myCart');
+    if (!items) return null;
+
     items = items.split(",");
     items = items.slice(0, -1) || 0;
 
-    if (items !== 0) {
-        len = items.length;
+    // Reset cart in case of store change
+    if (items.length > 1 && (items[items.length - 2].split("|")[2] !== items[items.length - 1].split("|")[2])) {
+        localStorage.setItem('myCart', `${items[items.length - 1]},`);
+    }
 
-        for (let i = 0; i < len; i++) {
-            total += parseFloat(items[i].split("|")[1]);
-            items[i] = items[i].split("|");
+    let total = 0;
+    let len = 0;
+
+    len = items.length;
+
+    for (let i = 0; i < len; i++) {
+        total += parseFloat(items[i].split("|")[1]);
+        items[i] = items[i].split("|");
+    }
+
+
+    total = Math.round(total * 100) / 100
+
+    return { total, len, items }
+
+
+}
+
+export async function addOrder() {
+    let cart = getCart().items;
+    let unique = [];
+    let ProductList = "";
+    let total = 0;
+
+    for (let i = 0; i < cart.length; i++) {
+        if (!unique.includes(cart[i][0])) unique.push(cart[i][0]);
+    }
+
+    for (let i = 0; i < unique.length; i++) {
+        // Initialization
+        unique[i, "cost"] = 0;
+        unique[i, "count"] = 0;
+
+        for (let j = 0; j < cart.length; j++) {
+            if (unique[i] == cart[j][0]) {
+                unique[i, "cost"] += parseFloat(cart[j][1]);
+                unique[i, "count"]++;
+            }
         }
 
-        total = Math.round(total * 100) / 100
-
-        return { total, len, items }
-    } else {
-        return { total, len, items }
+        ProductList += `${unique[i]}(${unique[i, "count"]}), `
+        total += Math.round(unique[i, "cost"] * 100) / 100;
     }
+
+    let order = {
+        StoreName: document.getElementById("storeName").innerText,
+        ProductList: ProductList,
+        OrderValue: total,
+        Username: cUser,
+        Address: document.getElementById("address").value,
+        TelNumber: document.getElementById("phone").value,
+        DeliveryOrders: document.getElementById("note").value,
+        PostNumber: document.getElementById("postal").value,
+        POSOption: document.getElementById("pos").checked
+    };
+
+    await axios.post(`http://${window.location.hostname}:${port}/addOrder`,
+        order,
+        {
+            headers: {
+                "Content-Type": "application/json",
+            },
+            withCredentials: true,
+            credentials: "include",
+        })
+        .then(async (response) => {
+            let res = response.data;
+
+            if (res === "OK") return window.location.href = "/success"
+            else
+                return alert("Error: " + res.err.code);
+        });
+
 }
 
 function getCookie(name) {
@@ -43,6 +107,11 @@ if (cUser) {
             clearInterval(check);
             if (cStamp < Date.now() + 120 * 60 * 1000) {
                 let cartInfo = getCart();
+                let len = 0;
+                let total = 0;
+
+                if (cartInfo !== null) { len = cartInfo.len; total = cartInfo.total; }
+
                 const userButton = document.createElement("div");
                 userButton.id = "userButton"
                 userButton.innerHTML = `<div class="dropdown dropdown-end">
@@ -63,13 +132,13 @@ if (cUser) {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
-            <span id="itemSize" class="badge badge-sm indicator-item">${cartInfo.len}</span>
+            <span id="itemSize" class="badge badge-sm indicator-item">${len}</span>
         </div>
     </div>
     <div tabindex="0" class="card card-compact dropdown-content bg-base-100 z-[1] mt-3 w-52 shadow">
         <div class="card-body">
-            <span id="itemSizeBig" class="text-lg font-bold">${cartInfo.len} Προϊόντα</span>
-            <span id="itemTotal" class="text-info">Σύνολο: ${cartInfo.total}€</span>
+            <span id="itemSizeBig" class="text-lg font-bold">${len} Προϊόν(τα)</span>
+            <span id="itemTotal" class="text-info">Σύνολο: ${total}€</span>
             <div class="card-actions">
                 <a href="/Cart" class="btn btn-primary btn-block">Καλάθι</a>
             </div>
@@ -84,10 +153,17 @@ if (cUser) {
     }, 100);
 }
 
-// get a single product
+// Get a single product
 const getProduct = async (storeName, productName) => {
     await axios.get(`http://${window.location.hostname}:${port}/getProduct?name=${storeName}&q=${productName}`).then(data => {
-        // this is the product object from server/index.js:157
+        // This is the product object from server/index.js:157
+        return data.data;
+    });
+}
+
+// Check if product is in specific store
+const checkProduct = async (storeName, productName) => {
+    await axios.get(`http://${window.location.hostname}:${port}/checkProduct?name=${storeName}&q=${productName}`).then(data => {
         return data.data;
     });
 }
@@ -170,31 +246,3 @@ export const login = async (e) => {
         });
 };
 
-// getUUID. TODO: use for auth
-async function getUUID() {
-
-    await axios.post(`http://${window.location.hostname}:${port}/getUUID`,
-        {
-            username: cUser,
-        },
-        {
-            headers: {
-                "Content-Type": "application/json",
-            },
-            withCredentials: true,
-            credentials: "include",
-        })
-        .then(async (response) => {
-            let res = response.data;
-
-            console.log(res);
-
-            // if (res === "OK") return window.location.href = "/"
-            // else if (res.err && res.err.status !== undefined) {
-            //     return alert("Error: " + res.err.response.text);
-            // } else if (res.err) {
-            //     return alert("Error: " + res.err.code);
-            // }
-
-        });
-};

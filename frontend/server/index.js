@@ -35,20 +35,21 @@ app.post('/register', async (req, res) => {
         .post(`http://${process.env.API_IP}:5145/register`)
         .send({ Username: username, Password: password })
         .set('Accept', 'application/json')
-        .then(r => {
-            var rand = function () {
-                return Math.random().toString(36).substring(2);
-            };
+        .then(async r => {
 
-            // 22 characters
-            var token = function () {
-                return rand() + rand();
-            };
+            await superagent
+                .post(`http://${process.env.API_IP}:5145/register/getuuid`)
+                .send({ Username: username })
+                .set('Accept', 'application/json')
+                .then(r => {
+                    r = JSON.parse(r.text).uuid;
+                    
+                    let userCookie = `${r}|${username}|${Date.now()}`;
 
-            let userCookie = `${token()}|${username}|${Date.now()}`;
+                    res.cookie("SessionID", userCookie, { maxAge: 120 * 60 * 1000 })
+                    return res.sendStatus(200);
+                }).catch(err => res.send({ err }));
 
-            res.cookie("SessionID", userCookie, { maxAge: 120 * 60 * 1000 })
-            return res.sendStatus(200);
         }).catch(err => res.send({ err }));
 });
 
@@ -62,35 +63,25 @@ app.post('/login', async (req, res) => {
         .post(`http://${process.env.API_IP}:5145/register/login`)
         .send({ Username: username, Password: password })
         .set('Accept', 'application/json')
-        .then(r => {
-            if (r.status == 200) {
-                var rand = function () {
-                    return Math.random().toString(36).substring(2);
-                };
+        .then(async r => {
 
-                // 22 characters
-                var token = function () {
-                    return rand() + rand();
-                };
+            if (r.status === 200) {
 
-                let userCookie = `${token()}|${username}|${Date.now()}`;
+                await superagent
+                .post(`http://${process.env.API_IP}:5145/register/getuuid`)
+                .send({ Username: username })
+                .set('Accept', 'application/json')
+                .then(r => {
+                    r = JSON.parse(r.text).uuid;
+                    
+                    let userCookie = `${r}|${username}|${Date.now()}`;
 
-                res.cookie("SessionID", userCookie, { maxAge: 120 * 60 * 1000 })
-                return res.sendStatus(200);
+                    res.cookie("SessionID", userCookie, { maxAge: 120 * 60 * 1000 })
+                    return res.sendStatus(200);
+                }).catch(err => res.send({ err }));
+
             }
-        }).catch(err => res.send({ err }));
-});
 
-app.post('/getUUID', async (req, res) => {
-
-    let username = req.body.username;
-
-    await superagent
-        .post(`http://${process.env.API_IP}:5145/register/getuuid`)
-        .send({ Username: username })
-        .set('Accept', 'application/json')
-        .then(r => {
-            res.send(r);
         }).catch(err => res.send({ err }));
 });
 
@@ -122,7 +113,7 @@ app.get('/getProducts', async (req, res) => {
     const { body } = await superagent
         .get(`http://${process.env.API_IP}:5145/register/getproducts`).send({ Storename: `${req.query.name}` });
 
-    if (body.length < 1) return res.send("Αυτό το μαγαζί δεν έχει προϊόντα ακόμα.")
+    if (body.length < 1) return res.send("Αυτό το μαγαζί δεν έχει προϊόντα ακόμα.");
 
     let productsList = ``;
 
@@ -131,15 +122,15 @@ app.get('/getProducts', async (req, res) => {
         <div class="card bg-base-100 w-full shadow-xl">
           <div class="card-body">
             <h2 id="${i}title" class="card-title">${body[i].productname}</h2>
-            <p>${body[i].price}</p>
+            <p>${body[i].price}€</p>
             <div class="card-actions justify-end">
-                <button id="${i}button" onClick="{(() => { let cart = localStorage.getItem('myCart') || ''; localStorage.setItem('myCart', cart + '${body[i].productname}|${body[i].price},'); document.location.reload(true) })() }" class="btn btn-primary">Πάρ' το!</button>
+                <button id="${i}button" onClick="{(() => { let cart = localStorage.getItem('myCart') || ''; localStorage.setItem('myCart', cart + '${body[i].productname}|${body[i].price}|${req.query.name},'); document.location.reload(true) })() }" class="btn btn-primary">+1</button>
             </div>
           </div>
         </div>
         `
     }
-    
+
     res.send(productsList);
 });
 
@@ -155,10 +146,39 @@ app.get('/getProduct', async (req, res) => {
     for (let i = 0; i < body.length; i++) {
         if (body[i].productname == req.query.q) {
             // Product result object
-            product = { "name": body[i].productname, "price": body[i].price }
+            product = {
+                "name": body[i].productname, "price": body[i].price, "storename": body[i].storename
+            }
             return res.send(product);
         }
     }
+});
+
+app.get('/checkProduct', async (req, res) => {
+    const { body } = await superagent
+        .get(`http://${process.env.API_IP}:5145/register/getproducts`).send({ Storename: `${req.query.name}` });
+
+    if (body.length < 1) return res.send("Αυτό το μαγαζί δεν έχει προϊόντα ακόμα.")
+    else if (!req.query.q) return res.send("NO_QUERY");
+
+    for (let i = 0; i < body.length; i++) {
+        if (body[i].productname == req.query.q) {
+            return res.send(true);
+        }
+    }
+
+    return res.send(false);
+});
+
+app.post('/addOrder', async (req, res) => {
+    res.send("OK");
+    console.log(req.body)
+    await superagent
+        .post(`http://${process.env.API_IP}:5145/register/addOrder`)
+        .send(req.body)
+        .set('Accept', 'application/json')
+        .then(r => {
+        }).catch(err => res.send({ err }));
 });
 
 app.listen(port, () => {

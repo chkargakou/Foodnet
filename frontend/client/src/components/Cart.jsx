@@ -1,37 +1,59 @@
 import React from "react";
-import { login, cUser, getCart } from "../actions";
+import { login, getCart, addOrder } from "../actions";
 
-if (cUser) {
-    const checkOrdersDiv = setInterval(async () => {
-        if (document.getElementById("orderList")) {
-            clearInterval(checkOrdersDiv);
+const checkOrdersDiv = setInterval(async () => {
+    if (document.getElementById("orderList")) {
 
-            let cart = getCart().items;
-            let unique = [];
+        // Check if cart in storage is empty
+        if (!localStorage.getItem("myCart")) return window.location.replace("/");
+        
+        clearInterval(checkOrdersDiv);
 
-            for (let i = 0; i < cart.length; i++) {
-                if (!unique.includes(cart[i][0])) unique.push(cart[i][0]);
-            }
+        let cart = getCart().items;
+        let unique = [];
+        let res = "";
+        let total = 0;
 
-            for (let i = 0; i < unique.length; i++) {
-                // Initialization
-                unique[i, "cost"] = 0;
-                unique[i, "count"] = 0;
-
-                for (let j = 0; j < cart.length; j++) {
-                    if (unique[i] == cart[j][0]) {
-                        unique[i, "cost"] += parseFloat(cart[j][1]);
-                        unique[i, "count"]++;
-                    }
-                }
-                console.log(`${unique[i]} ${unique[i, "count"]} ${Math.round(unique[i, "cost"] * 100) / 100}`);
-                // TODO: Make html code for each ordered item and use unique[i][0] as the item count for each unique[i] inside this loop
-            }
-
-            document.getElementById("orderList").innerHTML = `${localStorage.getItem('myCart')}`;
+        for (let i = 0; i < cart.length; i++) {
+            if (!unique.includes(cart[i][0])) unique.push(cart[i][0]);
         }
-    }, 100);
-}
+
+        for (let i = 0; i < unique.length; i++) {
+            // Initialization
+            unique[i, "cost"] = 0;
+            unique[i, "count"] = 0;
+
+            // Cost of a single one (used in removing items from cart)
+            unique[i, "singleCost"] = cart[i][1];
+
+            for (let j = 0; j < cart.length; j++) {
+                if (unique[i] === cart[j][0]) {
+                    unique[i, "cost"] += parseFloat(cart[j][1]);
+                    unique[i, "count"]++;
+                }
+            }
+
+            let storeName = cart[0][2];
+
+            res += ` 
+                <div class="card bg-base-100 w-full shadow-xl container mx-auto mx-32">
+          <div class="card-body">
+            <h2 id="${i}title" class="card-title">${unique[i]}</h2>
+            <p>x${unique[i, "count"]}</p>
+            <div class="card-actions justify-end">
+                <p>${Math.round(unique[i, "cost"] * 100) / 100}€</p>
+                <button id="${i}button" onClick="{(() => { let cart = localStorage.getItem('myCart'); localStorage.setItem('myCart', cart.replace('${unique[i]}|${unique[i, 'singleCost']}|${storeName},', '')); document.location.reload(true) })() }" class="btn btn-primary">-1</button>
+            </div>
+          </div>
+        </div>`;
+            total += Math.round(unique[i, "cost"] * 100) / 100;
+        }
+
+        document.getElementById("orderList").innerHTML = res;
+        document.getElementById("storeName").innerHTML = cart[0][2];
+        document.getElementById("totalCost").innerText = `Σύνολο: ${total}€`;
+    }
+}, 100);
 
 function App() {
     return (
@@ -116,7 +138,41 @@ function App() {
                 <hr />
             </header>
 
-            <div id="orderList" className="place-items-center py-16 grid gap-8 columns-3"></div>
+            <h2 id="storeName" className="text-center py-10 text-3xl font-extrabold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-3xl dark:text-white"></h2>
+
+            <div id="orderList" className="place-items-center py-16 grid"></div>
+
+            <h2 id="totalCost" className="text-center mb-10 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-3xl dark:text-white"></h2>
+
+            <form className="container mx-auto px-32">
+                <div className="grid gap-6 mb-6 md:grid-cols-1">
+                    <div>
+                        <label htmlFor="address" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Διεύθυνση</label>
+                        <input type="text" id="address" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Διεύθυνση" required />
+                    </div>
+                    <div>
+                        <label htmlFor="phone" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Τηλέφωνο</label>
+                        <input type="tel" id="phone" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="6981234567" pattern="[0-9]{10}" required />
+                    </div>
+                    <div>
+                        <label htmlFor="postal" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Τ.Κ.</label>
+                        <input type="number" id="postal" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="12345" required />
+                    </div>
+                    <div>
+                        <label htmlFor="note" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Σημειώσεις για Delivery</label>
+                        <input type="text" id="note" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-8 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="" />
+                    </div>
+                </div>
+                <div className="flex items-start mb-6">
+                    <div className="flex items-center h-5">
+                        <input id="pos" type="checkbox" value="" className="w-4 h-4 border border-gray-300 rounded-sm bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800" />
+                    </div>
+                    <label htmlFor="pos" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Θέλω POS.</label>
+                </div>
+                <button onClick={addOrder} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Ολοκλήρωση Παραγγελείας</button>
+            </form>
+
+
 
         </div>
     );
