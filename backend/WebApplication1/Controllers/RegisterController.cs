@@ -73,16 +73,17 @@ namespace Web.Controllers
             {
                 return Unauthorized("Invalid username or password.");
             }
-
             string decryptedStoredPassword = AesEncryption.Decrypt(storedEncryptedPassword);
-            if (login.Password == decryptedStoredPassword)
+            if (login.Password != decryptedStoredPassword)
             {
-                return Ok("Login successful!");
-            }
-            else
-            {
+
                 return Unauthorized("Invalid username or password.");
             }
+            string uuidSql = "select uuid from users where username = @Username;";
+            var UUID = db.QuerySingleOrDefault<string>(uuidSql, new { Username = login.Username });
+            string roleSql = "select role from users where uuid = @uuid";
+            string role = db.QuerySingleOrDefault<string>(roleSql, new { uuid = UUID });
+            return Ok(role);
         }
         [HttpGet("getstores")]
         public ActionResult<IEnumerable<Store>> GetStores(int page = 1, int size = 1000)
@@ -124,8 +125,8 @@ namespace Web.Controllers
         public IActionResult AddProduct(AddProduct product)
         {
             using var db = Connection;
-            var sql = "select * from stores join users on stores.owner = username Where username = @Username and users.role = 'owner';";
-            db.Query(sql, new { Username = product.OwnerName });
+            var sql = "select * from stores join users on stores.owner = uuid Where uuid = @uuid and users.role = 'owner';";
+            db.Query(sql, new { uuid = product.ownerUUID });
             if (sql == null)
             {
                 return Conflict("User is not an Owner or the owner of this store");
@@ -149,8 +150,8 @@ namespace Web.Controllers
         public IActionResult AddStore(AddStore addStore)
         {
             using var db = Connection;
-            var sql = "select * from users where username = @Username and role = 'owner';";
-            db.Query(sql, new { Username = addStore.OwnerName });
+            var sql = "select * from users where uuid = @uuid and role = 'owner';";
+            db.Query(sql, new { uuid = addStore.ownerUUID });
             if (sql == null)
             {
                 return Conflict("User is not an owner");
@@ -166,7 +167,8 @@ namespace Web.Controllers
             count = db.ExecuteScalar<int>(countSql);
 
 
-            var insertSql = @"insert into stores (id, name, location, owner,regdate) VALUES (@Id, @Name, @Location, @Owner,@regdate);";
+            var insertSql = @"insert into stores (id, name, location, owner,regdate)
+                            VALUES (@Id, @Name, @Location, @Owner,@regdate);";
             string regdate = DateTime.UtcNow.ToString("yyyy-MM-dd");
             try
             {
@@ -175,7 +177,7 @@ namespace Web.Controllers
                     Id = count + 1,
                     Name = addStore.StoreName,
                     Location = addStore.location,
-                    Owner = addStore.OwnerName
+                    Owner = addStore.ownerUUID
                 });
 
                 return Ok("Store added successfully.");
@@ -187,11 +189,11 @@ namespace Web.Controllers
         }
 
         [HttpPost("makeaccowner")]
-        public IActionResult ConvertToOwner(User user)
+        public IActionResult ConvertToOwner(string UUID)
         {
             using var db = Connection;
-            var sql = "update users set roleusing var db = Connection; = 'owner' where username = @Username;";
-            db.Query(sql, new { Username = user.Username });
+            var sql = "update users set role = 'owner' where uuid = @uuid;";
+            db.Query(sql, new { uuid = UUID });
             if (sql == null)
             {
                 return Conflict("User is already an owner");
@@ -203,11 +205,10 @@ namespace Web.Controllers
         {
             using var db = Connection;
 
-            var sql = "insert into orders(id,storename,productlist,ordervalue,username,address,isCompleted,telNumber,deliveryOrders,postNumber,posOption)values(@id,@storeName,@productlist,@ordervalue,@username,@address,@isCompleted,@telNumber,@deliveryOrders,@postNumber,@posOption);";
+            var sql = "insert into orders(id,storename,productlist,ordervalue,address,isCompleted,telNumber,deliveryOrders,postNumber,posOption,uuid)values(@id,@storeName,@productlist,@ordervalue,@address,@isCompleted,@telNumber,@deliveryOrders,@postNumber,@posOption,@uuid);";
             try
             {
-
-                db.Query(sql, new {id = 0, storename = order.StoreName , productlist = order.ProductList ,ordervalue = order.OrderValue ,username = order.Username , address = order.Address, isCompleted = false ,telNumber = order.TelNumber , deliveryOrders = order.DeliveryOrders , postNumber = order.PostNumber , posOption = order.POSOption});
+                db.Query(sql, new { id = 0, storename = order.StoreName, productlist = order.ProductList, ordervalue = order.OrderValue, address = order.Address, isCompleted = false, telNumber = order.TelNumber, deliveryOrders = order.DeliveryOrders, postNumber = order.PostNumber, posOption = order.POSOption, uuid = order.UUID });
                 return Ok("order added");
             }
             catch (Exception ex)
@@ -216,12 +217,21 @@ namespace Web.Controllers
             }
         }
 
-        [HttpGet("getorders")]
-        public ActionResult<IEnumerable<Order>> GetOrders(User user, int page = 1, int size = 1000)
+        [HttpGet("getOrdersUser")]
+        public ActionResult<IEnumerable<Order>> GetOrdersUsers(string UUID, int page = 1, int size = 1000)
         {
             using var db = Connection;
-            string sql = "select * from orders where storename = @storename or username = @username LIMIT @Size OFFSET @Offset;";
-            var orders = db.Query<Order>(sql, new { storename = user.Username,username = user.Username, Size = size, Offset = (page - 1) * size }).ToList();
+            string sql = "select * from orders where uuid = @uuid LIMIT @Size OFFSET @Offset;";
+            var orders = db.Query<Order>(sql, new { uuid = UUID, Size = size, Offset = (page - 1) * size }).ToList();
+
+            return Ok(orders);
+        }
+        [HttpGet("getOrdersStore")]
+        public ActionResult<IEnumerable<Order>> GetOrdersStore(string StoreName, int page = 1, int size = 1000)
+        {
+            using var db = Connection;
+            string sql = "select * from orders where storename = @storename LIMIT @Size OFFSET @Offset;";
+            var orders = db.Query<Order>(sql, new { storename = StoreName, Size = size, Offset = (page - 1) * size }).ToList();
 
             return Ok(orders);
         }
@@ -231,8 +241,86 @@ namespace Web.Controllers
         {
             using var db = Connection;
             string sql = "update orders set is_delivered = true where id = @orderID;";
-            var orders = db.Query(sql,new {orderId = id});
+            var orders = db.Query(sql, new { orderId = id });
             return Ok("order has been completed");
-        }  
+        }
+
+        [HttpGet("isOwner")]
+        public ActionResult IsOwner(string UUID)
+        {
+            using var db = Connection;
+            var sql = "select * from users where uuid = @uuid and role = 'owner';";
+            try
+            {
+                string res = db.QuerySingleOrDefault<string>(sql, new { uuid = UUID });
+
+                if (res == "owner")
+                {
+                    return Ok(true);
+                }
+                else
+                {
+                    return Ok(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Conflict($"{ex.Message}");
+            }
+        }
+
+        [HttpGet("isAdmin")]
+        public ActionResult IsAdmin(string UUID)
+        {
+            using var db = Connection;
+            var sql = "select role from users where uuid = @uuid and role = 'admin';";
+            try
+            {
+                string res = db.QuerySingleOrDefault<string>(sql, new { uuid = UUID });
+
+                if (res == "admin")
+                {
+                    return Ok(true);
+                }
+                else
+                {
+                    return Ok(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Conflict($"{ex.Message}");
+            }
+        }
+
+        [HttpPost("insertTimestamp")]
+        public IActionResult InsertTimestamp(Timestamp timestamp)
+        {
+            using var db = Connection;
+            var sql = "update users set timestamp = @TimestampSql where uuid = @uuid;";
+            db.Query(sql, new { TimestampSql = timestamp.timestampNum, uuid = timestamp.UUID });
+            if (sql == null)
+            {
+                return Conflict();
+            }
+            else
+            {
+                return Ok();
+            }
+        }
+        [HttpPost("getusername")]
+        public IActionResult GetUserName(string UUID)
+        {
+            using var db = Connection;
+            string sql = "select username from users where uuid = @uuid;";
+            var username = db.QuerySingleOrDefault<string>(sql, new { uuid = UUID });
+
+            if (username == null)
+            {
+                return NotFound("User not found.");
+            }
+            return Ok(username);
+        }
+
     }
 }
