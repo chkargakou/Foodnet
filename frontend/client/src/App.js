@@ -10,6 +10,8 @@ import {
 import Home from "./components/Home";
 import Register from "./components/Register";
 import Logout from "./components/Logout";
+import Management from "./components/Management";
+import MyOrders from "./components/MyOrders";
 import Success from "./components/Success";
 import Stores from "./components/Stores";
 import Store from "./components/Store";
@@ -61,6 +63,16 @@ function App() {
                     <Route
                         path="/success"
                         element={<Success />}
+                    />
+
+                    <Route
+                        path="/MyOrders"
+                        element={<MyOrders />}
+                    />
+
+<Route
+                        path="/Management"
+                        element={<Management />}
                     />
 
                     <Route

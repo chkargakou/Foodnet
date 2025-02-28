@@ -1,6 +1,7 @@
 import React from "react";
 import { login, getCart, addOrder } from "../actions";
 
+// For a single order
 const checkOrdersDiv = setInterval(async () => {
     if (document.getElementById("orderList")) {
 
@@ -42,6 +43,7 @@ const checkOrdersDiv = setInterval(async () => {
             <p>x${unique[i, "count"]}</p>
             <div class="card-actions justify-end">
                 <p>${Math.round(unique[i, "cost"] * 100) / 100}€</p>
+                <button id="${i}button" onClick="{(() => { let cart = localStorage.getItem('myCart') || ''; localStorage.setItem('myCart', cart + '${unique[i]}|${unique[i, 'singleCost']}|${storeName},'); document.location.reload(true) })() }" class="btn btn-primary">+1</button>
                 <button id="${i}button" onClick="{(() => { let cart = localStorage.getItem('myCart'); localStorage.setItem('myCart', cart.replace('${unique[i]}|${unique[i, 'singleCost']}|${storeName},', '')); document.location.reload(true) })() }" class="btn btn-primary">-1</button>
             </div>
           </div>
@@ -144,7 +146,7 @@ function App() {
 
             <h2 id="totalCost" className="text-center mb-10 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-3xl dark:text-white"></h2>
 
-            <form className="container mx-auto px-32">
+            <div className="container mx-auto px-32">
                 <div className="grid gap-6 mb-6 md:grid-cols-1">
                     <div>
                         <label htmlFor="address" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Διεύθυνση</label>
@@ -170,7 +172,7 @@ function App() {
                     <label htmlFor="pos" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Θέλω POS.</label>
                 </div>
                 <button onClick={addOrder} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Ολοκλήρωση Παραγγελείας</button>
-            </form>
+            </div>
 
 
 
