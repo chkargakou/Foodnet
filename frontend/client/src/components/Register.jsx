@@ -1,5 +1,5 @@
 import React from "react";
-import { register, login, basket, cUser } from "../actions";
+import { register, login } from "../actions";
 
 function App() {
   return (
