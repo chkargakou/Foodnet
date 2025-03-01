@@ -8,6 +8,9 @@ Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+builder.Services.AddSingleton<IDbConnectionScript, MySqlConnectionScript>();
+
 // Add services to the container.
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
