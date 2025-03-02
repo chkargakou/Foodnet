@@ -1,15 +1,5 @@
 import React from "react";
-import { login, port } from "../actions";
-import axios from "axios";
-
-const checkStoresDiv = setInterval(async () => {
-  if (document.getElementById("storesList")) {
-    clearInterval(checkStoresDiv);
-    await axios.get(`http://${window.location.hostname}:${port}/getStores`).then(data => {
-      document.getElementById("storesList").innerHTML = `${data.data}`;
-    });
-  }
-}, 100);
+import { login } from "../utils/actions";
 
 function App() {
   return (

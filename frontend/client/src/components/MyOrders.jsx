@@ -1,17 +1,5 @@
 import React from "react";
-import { login, cUser, getOrdersUser } from "../actions";
-
-// For complete orders
-const checkOrdersDiv = setInterval(async () => {
-    if (document.getElementById("ordersList")) {
-        // Check if cart in storage is empty
-        if (!cUser) return window.location.replace("/");
-
-        clearInterval(checkOrdersDiv);
-
-        await getOrdersUser();
-    }
-}, 100);
+import { login } from "../utils/actions";
 
 function App() {
     return (

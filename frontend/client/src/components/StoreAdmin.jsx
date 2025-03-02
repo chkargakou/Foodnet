@@ -1,5 +1,5 @@
 import React from "react";
-import { login, makeAccOwner } from "../utils/actions";
+import { login, addStore } from "../utils/actions";
 
 function App() {
     return (
@@ -84,15 +84,26 @@ function App() {
                 <hr />
             </header>
 
-            <h2 className="text-center py-10 text-3xl font-extrabold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-3xl dark:text-white">Προσθήκη Μαγαζάτορα</h2>
+            <h2 className="text-center py-10 text-3xl font-extrabold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-3xl dark:text-white">Προσθήκη Μαγαζιού</h2>
 
-            <div id="addOwnerDiv" className="place-items-center py-16 grid gap-8 columns-3">
+            <div className="place-items-center py-16 grid gap-8 columns-3">
+                
                 <label className="input validator">
                     <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.5" fill="none" stroke="currentColor"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></g></svg>
-                    <input type="input" name="ownerName" required placeholder="Όνομα Χρήστη" pattern="[A-Za-z][A-Za-z0-9\-]*" minLength="3" maxLength="30" title="Μόνο γράμματα, νούμερα και παύλες." />
+                    <input type="input" name="storeName" required placeholder="Όνομα Μαγαζιού" pattern="[A-Za-z][A-Za-z0-9\-]*" minLength="3" maxLength="128" title="Μόνο γράμματα, νούμερα και παύλες." />
                 </label>
-                <button onClick={makeAccOwner} className="btn btn-neutral">Προσθήκη</button>
+                
+                <label className="input validator">
+                    <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.5" fill="none" stroke="currentColor"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></g></svg>
+                    <input type="input" name="storeLocation" required placeholder="Τοποθεσία" pattern="[A-Za-z][A-Za-z0-9\-]*" minLength="3" maxLength="128" title="Μόνο γράμματα, νούμερα και παύλες." />
+                </label>
+
+                <button onClick={addStore} className="btn btn-neutral">Προσθήκη Μαγαζιού</button>
             </div>
+
+            <h2 className="text-center py-10 text-3xl font-extrabold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-3xl dark:text-white">Τα μαγαζιά σου</h2>
+
+            <div id="userStoresList" className="place-items-center py-16 mx-32 grid"></div>
 
         </div>
     );

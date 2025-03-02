@@ -1,5 +1,5 @@
 import React from "react";
-import { login } from "../actions";
+import { login } from "../utils/actions";
 
 function App() {
   return (
