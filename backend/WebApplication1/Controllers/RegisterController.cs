@@ -12,7 +12,7 @@ namespace Web.Controllers
         int count;
         private readonly IDbConnectionScript _dbConnectionScript;
 
-        public RegisterController(IDbConnectionScript dbConnectionscript)
+        public RegisterController(IDbConnectionScript dbConnectionscript ,IConfiguration configuration)
         {
             _dbConnectionScript = dbConnectionscript;
         }
