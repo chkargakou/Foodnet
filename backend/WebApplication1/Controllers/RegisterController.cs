@@ -1,15 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Dapper;
-using System.Data;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Web.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("register")]
     public class RegisterController : ControllerBase
     {
-        int count;
         private readonly IDbConnectionScript _dbConnectionScript;
 
         public RegisterController(IDbConnectionScript dbConnectionscript ,IConfiguration configuration)
@@ -18,14 +15,13 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult<RegisterResult> Create(Register reg)
+        public ActionResult<RegisterResult> Register(Register reg)
         {
             RegisterResult result = new RegisterResult();
             result.Username = reg.Username;
             using var db = _dbConnectionScript.CreateConnection();
             string checkSql = "select count(*) from users where username = @Username;";
             int existingUserCount = db.QuerySingle<int>(checkSql, new { Username = reg.Username });
-
             if (existingUserCount == 1)
             {
                 return Conflict("Username already exists. Please choose a different one.");
@@ -47,10 +43,10 @@ namespace Web.Controllers
                 Role = "User"
             });
 
-            return result;
+            return Ok(result);
         }
 
-        [HttpPost("login")]
+       /* [HttpPost("login")]
         public IActionResult Login(Login login)
         {
             byte[] data = Convert.FromBase64String(login.Password);
@@ -79,8 +75,8 @@ namespace Web.Controllers
             string roleSql = "select role from users where uuid = @uuid";
             string role = db.QuerySingleOrDefault<string>(roleSql, new { uuid = UUID });
             return Ok(role);
-        }
-        [HttpGet("getstores")]
+        }*/
+        /*[HttpGet("getstores")]
         public ActionResult<IEnumerable<Store>> GetStores(int page = 1, int size = 1000)
         {
             using var db = _dbConnectionScript.CreateConnection();
@@ -88,8 +84,8 @@ namespace Web.Controllers
             var stores = db.Query<Store>(sql, new { Size = size, Offset = (page - 1) * size }).ToList();
 
             return Ok(stores);
-        }
-        [HttpPost("getuuid")]
+        }*/
+        /*[HttpPost("getuuid")]
         public IActionResult GetUUID(User user)
         {
             UserResult result = new UserResult();
@@ -104,9 +100,9 @@ namespace Web.Controllers
             }
 
             return Ok(new { UUID = uuid });
-        }
+        }*/
 
-        [HttpGet("getproducts")]
+        /*[HttpGet("getproducts")]
         public ActionResult<IEnumerable<ProductsResult>> GetProducts(Product product, int page = 1, int size = 1000)
         {
             using var db = _dbConnectionScript.CreateConnection();
@@ -121,15 +117,15 @@ namespace Web.Controllers
         {
             using var db = _dbConnectionScript.CreateConnection();
             var sql = "select * from stores join users on stores.owner = uuid Where uuid = @uuid and users.role = 'owner';";
-            db.Query(sql, new { uuid = product.ownerUUID });
-            if (sql == null)
+            var result = db.Query(sql, new { uuid = product.ownerUUID });
+            if (result == null)
             {
                 return Conflict("User is not an Owner or the owner of this store");
             }
             var countSql = "select count(*) from products;";
             count = db.ExecuteScalar<int>(countSql);
 
-            var insertSql = "insert into stores(id,name,location,price)values(@id,@storeName,@productName,@price);";
+            var insertSql = "insert into products(storename,productname,price,id)values(@storename,@productName,@price,@id);";
             try
             {
 
@@ -140,31 +136,27 @@ namespace Web.Controllers
             {
                 return Conflict("Product could not be added");
             }
-        }
-        [HttpPost("addstore")]
+        }*/
+        /* [HttpPost("addstore")]
         public IActionResult AddStore(AddRemoveStore addStore)
         {
             using var db = _dbConnectionScript.CreateConnection();
             var sql = "select * from users where uuid = @uuid and role = 'owner';";
-            db.Query(sql, new { uuid = addStore.ownerUUID });
-            if (sql == null)
+            var result = db.Query(sql, new { uuid = addStore.ownerUUID });
+            if (result == null)
             {
                 return Conflict("User is not an owner");
             }
-            var checkSql = "select(*) from stores where name = @Name and location = @Location;";
-            int count = db.ExecuteScalar<int>(checkSql, new { Name = addStore.StoreName, Location = addStore.location });
-
+            var checkSql = "select count(*) from stores where name = @Name;";
+            int count = db.ExecuteScalar<int>(checkSql, new { Name = addStore.StoreName});
             if (count > 0)
             {
-                return Conflict("A store with this name and location already exists.");
+                return Conflict("A store with this name already exists");
             }
             var countSql = "select count(*) from stores;";
             count = db.ExecuteScalar<int>(countSql);
-
-
-            var insertSql = @"insert into stores (id, name, location, owner,regdate)
-                            VALUES (@Id, @Name, @Location, @Owner,@regdate);";
-            string regdate = DateTime.UtcNow.ToString("yyyy-MM-dd");
+            var insertSql = "insert into stores (name, location,createdat,id,owner)values(@Name,@Location,@regdate,@Id,@Owner);";
+            string registrationdate = DateTime.UtcNow.ToString("yyyy-MM-dd");
             try
             {
                 db.Execute(insertSql, new
@@ -172,7 +164,8 @@ namespace Web.Controllers
                     Id = count + 1,
                     Name = addStore.StoreName,
                     Location = addStore.location,
-                    Owner = addStore.ownerUUID
+                    Owner = addStore.ownerUUID,
+                    regdate = registrationdate
                 });
 
                 return Ok("Store added successfully.");
@@ -185,7 +178,7 @@ namespace Web.Controllers
         [HttpPost("removestore")]
         public IActionResult RemoveStore(AddRemoveStore removeStore)
         {
-            using var db = _dbConnectionScript.CreateConnection();
+            var db = _dbConnectionScript.CreateConnection();
             var sql = "delete from stores where name = @StoreName and location = @Location and owner = @OwnerUUID;";
             try
             {
@@ -203,21 +196,21 @@ namespace Web.Controllers
                 return Conflict($"Store could not be removed: {ex.Message}");
             }
 
-        }
+        }*/
 
-        [HttpPost("makeaccowner")]
+        /*[HttpPost("makeaccowner")]
         public IActionResult ConvertToOwner(string UUID)
         {
             using var db = _dbConnectionScript.CreateConnection();
             var sql = "update users set role = 'owner' where uuid = @uuid;";
-            db.Query(sql, new { uuid = UUID });
-            if (sql == null)
+            var result = db.Query(sql, new { uuid = UUID });
+            if (result == null)
             {
                 return Conflict("User is already an owner");
             }
             return Ok("User changed to owner");
-        }
-        [HttpPost("addorder")]
+        }*/
+        /*[HttpPost("addorder")]
         public IActionResult AddOrder(Order order)
         {
             using var db = _dbConnectionScript.CreateConnection();
@@ -244,12 +237,11 @@ namespace Web.Controllers
             return Ok(orders);
         }
         [HttpGet("getOrdersStore")]
-        public ActionResult<IEnumerable<OrderStore>> GetOrdersStore(string StoreName, int page = 1, int size = 1000)
+        public ActionResult<IEnumerable<OrderStore>> GetOrdersStore(Ownership ownership, int page = 1, int size = 1000)
         {
             using var db = _dbConnectionScript.CreateConnection();
-            string sql = "select * from orders where storename = @storename LIMIT @Size OFFSET @Offset;";
-            var orders = db.Query<OrderStore>(sql, new { storename = StoreName, Size = size, Offset = (page - 1) * size }).ToList();
-
+            string sql = "select * from orders inner join stores on stores.name = orders.storename where orders.storename = @storeName and stores.owner = @UUID   LIMIT @Size OFFSET @Offset;";
+            var orders = db.Query<OrderStore>(sql, new { storeName = ownership.storeName , UUID = ownership.UUID , Size = size, Offset = (page - 1) * size }).ToList();
             return Ok(orders);
         }
 
@@ -260,13 +252,13 @@ namespace Web.Controllers
             string sql = "update orders set is_delivered = true where id = @orderID;";
             var orders = db.Query(sql, new { orderId = id });
             return Ok("order has been completed");
-        }
+        }*/
 
-        [HttpGet("isOwner")]
+        /*[HttpGet("isOwner")]
         public ActionResult IsOwner(string UUID)
         {
             using var db = _dbConnectionScript.CreateConnection();
-            var sql = "select * from users where uuid = @uuid and role = 'owner';";
+            var sql = "select role from users where uuid = @uuid and role = 'owner';";
             try
             {
                 string res = db.QuerySingleOrDefault<string>(sql, new { uuid = UUID });
@@ -338,6 +330,15 @@ namespace Web.Controllers
             }
             return Ok(username);
         }
+        /*[HttpGet("getStoresOwned")]
+        public ActionResult<IEnumerable<Store>> GetStoresOwned(string UUID,int page = 1, int size = 1000)
+        {
+            var db = _dbConnectionScript.CreateConnection();
+            string sql = "select * from stores where owner = @uuid;";
+            var stores = db.Query<Store>(sql, new {uuid = UUID, Size = size, Offset = (page - 1) * size }).ToList();
+
+            return Ok(stores);
+        }*/
 
     }
 }
