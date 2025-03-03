@@ -21,7 +21,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
-app.MapGet("/", () => "5").WithName("basicresponse");
+app.MapGet("/", () => "10").WithName("basicresponse");
 
 app.Run();
 
