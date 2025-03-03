@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "WebApplication1\WebApplication1.csproj", "{395AAAE0-59B5-4E01-BA4C-18F7BEC255B6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodNetBackend", "FoodNetBackend\FoodNetBackend.csproj", "{395AAAE0-59B5-4E01-BA4C-18F7BEC255B6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web.Tests", "Web.Tests\Web.Tests.csproj", "{990A993F-FFDC-4687-9DBA-BD338AB0494D}"
 EndProject

@@ -17,7 +17,7 @@ namespace Web.Controllers
         public ActionResult<IEnumerable<ProductsResult>> GetProducts(Product product, int page = 1, int size = 1000)
         {
             using var db = _dbConnectionScript.CreateConnection();
-            string sql = "SELECT * FROM products where storename = @storename LIMIT @Size OFFSET @Offset;";
+            string sql = "select * from products where storename = @storename LIMIT @Size OFFSET @Offset;";
             var products = db.Query<ProductsResult>(sql, new { storename = product.Storename, Size = size, Offset = (page - 1) * size }).ToList();
 
             return Ok(products);
@@ -47,6 +47,37 @@ namespace Web.Controllers
             {
                 return Conflict("Product could not be added");
             }
+        }
+        [HttpPost("removeproduct")]
+        public IActionResult RemoveProduct(AddProduct product)
+        {
+            var db = _dbConnectionScript.CreateConnection();
+            var ownerShipSql = "select * from stores where owner = @Owneruuid and name = @Storename;";
+            var res = db.Execute(ownerShipSql,new {Owneruuid = product.ownerUUID , Storename = product.StoreName});
+            if (res == 0)
+            {
+                return Conflict("You are not the Owner of the store that has this product");
+            }
+            var sql = "delete from products where storename = @StoreName and productname = @Productname and price = @Price;";
+            try
+            {
+                int rowsAffected = db.Execute(sql, new
+                {
+                    StoreName = product.StoreName,
+                    Productname = product.ProductName,
+                    price = product.ProductPrice
+                });
+                if (rowsAffected == 0)
+                {
+                    return NotFound("Product not found");
+                }
+                return Ok("Product removed successfully.");
+            }
+            catch (Exception ex)
+            {
+                return Conflict($"Store could not be removed: {ex.Message}");
+            }
+
         }
     }
 }

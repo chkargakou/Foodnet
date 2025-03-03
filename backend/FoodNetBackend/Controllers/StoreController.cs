@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Dapper;
+using System.Security.Cryptography.X509Certificates;
 namespace Web.Controllers
 {
     [ApiController]
@@ -40,7 +41,7 @@ namespace Web.Controllers
             }
             var countSql = "select count(*) from stores;";
             count = db.ExecuteScalar<int>(countSql);
-            var insertSql = "insert into stores (name, location,createdat,id,owner)values(@Name,@Location,@regdate,@Id,@Owner);";
+            var insertSql = "insert into stores (name, location,createdat,store_id,owner)values(@Name,@Location,@regdate,@Id,@Owner);";
             string registrationdate = DateTime.UtcNow.ToString("yyyy-MM-dd");
             try
             {
@@ -77,13 +78,14 @@ namespace Web.Controllers
                 {
                     return NotFound("Store not found or you do not have permission to delete it.");
                 }
+                var deleteSql = "delete from products where storename = @StoreName";
+                db.Execute(deleteSql , new {StoreName =removeStore.StoreName});
                 return Ok("Store removed successfully.");
             }
             catch (Exception ex)
             {
                 return Conflict($"Store could not be removed: {ex.Message}");
             }
-
         }
         [HttpGet("getStoresOwned")]
         public ActionResult<IEnumerable<Store>> GetStoresOwned(string UUID, int page = 1, int size = 1000)
