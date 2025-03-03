@@ -9,7 +9,7 @@ namespace Web.Controllers
     {
         private readonly IDbConnectionScript _dbConnectionScript;
 
-        public OrderController(IDbConnectionScript dbConnectionscript ,IConfiguration configuration)
+        public OrderController(IDbConnectionScript dbConnectionscript, IConfiguration configuration)
         {
             _dbConnectionScript = dbConnectionscript;
         }
@@ -44,17 +44,24 @@ namespace Web.Controllers
         {
             using var db = _dbConnectionScript.CreateConnection();
             string sql = "select * from orders inner join stores on stores.name = orders.storename where orders.storename = @storeName and stores.owner = @UUID   LIMIT @Size OFFSET @Offset;";
-            var orders = db.Query<OrderStore>(sql, new { storeName = ownership.storeName , UUID = ownership.UUID , Size = size, Offset = (page - 1) * size }).ToList();
+            var orders = db.Query<OrderStore>(sql, new { storeName = ownership.storeName, UUID = ownership.UUID, Size = size, Offset = (page - 1) * size }).ToList();
             return Ok(orders);
         }
 
         [HttpPost("completeorder")]
-        public IActionResult CompleteOrder(int id)
+        public IActionResult CompleteOrder(string id)
         {
             using var db = _dbConnectionScript.CreateConnection();
-            string sql = "update orders set is_delivered = true where id = @orderID;";
-            var orders = db.Query(sql, new { orderId = id });
-            return Ok("order has been completed");
+            string sql = "update orders set isCompleted = true where id = @orderID;";
+            try
+            {
+                var orders = db.Query(sql, new { orderId = id });
+                return Ok("Order has been completed!");
+            }
+            catch (Exception ex)
+            {
+                return Conflict($"Order could not be completed: {ex.Message}");
+            }
         }
     }
 }

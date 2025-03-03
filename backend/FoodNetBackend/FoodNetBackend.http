@@ -1,0 +1,6 @@
+@FoodNetBackend_HostAddress = http://0.0.0.0:5145
+
+GET {{FoodNetBackend_HostAddress}}/
+Accept: application/json
+
+###
