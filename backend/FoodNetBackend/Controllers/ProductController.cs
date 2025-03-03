@@ -49,7 +49,7 @@ namespace Web.Controllers
             }
         }
         [HttpPost("removeproduct")]
-        public IActionResult RemoveProduct(AddProduct product)
+        public IActionResult RemoveProduct(RemoveProd product)
         {
             var db = _dbConnectionScript.CreateConnection();
             var ownerShipSql = "select * from stores where owner = @Owneruuid and name = @Storename;";
@@ -58,14 +58,13 @@ namespace Web.Controllers
             {
                 return Conflict("You are not the Owner of the store that has this product");
             }
-            var sql = "delete from products where storename = @StoreName and productname = @Productname and price = @Price;";
+            var sql = "delete from products where storename = @StoreName and productname = @Productname;";
             try
             {
                 int rowsAffected = db.Execute(sql, new
                 {
                     StoreName = product.StoreName,
-                    Productname = product.ProductName,
-                    price = product.ProductPrice
+                    Productname = product.ProductName
                 });
                 if (rowsAffected == 0)
                 {
