@@ -1,5 +1,5 @@
 import React from "react";
-import { login, makeAccOwner, removeUser } from "../utils/actions.js";
+import { login, addProduct } from "../utils/actions.js";
 
 function App() {
     return (
@@ -84,19 +84,20 @@ function App() {
                 <hr />
             </header>
 
-            <h2 className="text-center py-10 text-3xl font-extrabold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-3xl dark:text-white">Προσθήκη Μαγαζάτορα</h2>
+            <h2 className="text-center py-10 text-3xl font-extrabold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-3xl dark:text-white">Προσθήκη Προϊόντος</h2>
 
-            <div id="addOwnerDiv" className="place-items-center py-16 grid gap-8">
-                    <input type="input" name="ownerName" className="input input-primary" required placeholder="Όνομα Χρήστη" pattern="[A-Za-z][A-Za-z0-9\-]*" minLength="3" maxLength="30" title="Μόνο γράμματα, νούμερα και παύλες." />
-                <button onClick={makeAccOwner} className="btn btn-neutral">Προσθήκη</button>
+            <div className="place-items-center py-16 grid gap-8">
+
+                    <input type="input" className="input input-primary" name="productName" required placeholder="Όνομα" pattern="[A-Za-z][A-Za-z0-9\-]*" minLength="3" maxLength="128" title="Μόνο γράμματα, νούμερα και παύλες." />
+
+                    <input type="number" className="input input-primary" name="productPrice" required placeholder="Τιμή" minLength="3" maxLength="128" title="Μόνο νούμερα." />
+
+                <button onClick={addProduct} className="btn btn-neutral">Προσθήκη</button>
             </div>
 
-            <h2 className="text-center py-10 text-3xl font-extrabold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-3xl dark:text-white">Αφαίρεση Χρήστη</h2>
+            <h2 className="text-center py-10 text-3xl font-extrabold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-3xl dark:text-white">Προϊόντα Μαγαζιού</h2>
 
-            <div id="rmUserDiv" className="place-items-center py-16 grid gap-8">
-                <input type="input" name="userName" className="input input-primary" required placeholder="Όνομα Χρήστη" pattern="[A-Za-z][A-Za-z0-9\-]*" minLength="3" maxLength="30" title="Μόνο γράμματα, νούμερα και παύλες." />
-                <button onClick={removeUser} className="btn btn-neutral">Αφαίρεση</button>
-            </div>
+            <div id="storeItemsList" className="place-items-center py-16 grid gap-8 columns-3"></div>
 
         </div>
     );

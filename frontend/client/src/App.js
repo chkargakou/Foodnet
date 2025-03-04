@@ -11,6 +11,12 @@ import Home from "./components/Home";
 import Register from "./components/Register";
 import Logout from "./components/Logout";
 import Management from "./components/Management";
+import StoreAdmin from "./components/StoreAdmin";
+import StoreItems from "./components/StoreItems";
+import StoreOrders from "./components/StoreOrders";
+import RemoveStore from "./components/RemoveStore";
+import RemoveProduct from "./components/RemoveProduct";
+import CompleteOrder from "./components/CompleteOrder";
 import MyOrders from "./components/MyOrders";
 import Success from "./components/Success";
 import Stores from "./components/Stores";
@@ -31,12 +37,12 @@ function App() {
                     />
 
                     <Route
-                        path="/stores"
+                        path="/Stores"
                         element={<Stores />}
                     />
 
                     <Route
-                        path="/store"
+                        path="/Store"
                         element={<Store />}
                     />
 
@@ -46,22 +52,22 @@ function App() {
                     />
 
                     <Route
-                        path="/about"
+                        path="/About"
                         element={<About />}
                     />
 
                     <Route
-                        path="/register"
+                        path="/Register"
                         element={<Register />}
                     />
 
                     <Route
-                        path="/logout"
+                        path="/Logout"
                         element={<Logout />}
                     />
 
                     <Route
-                        path="/success"
+                        path="/Success"
                         element={<Success />}
                     />
 
@@ -70,9 +76,39 @@ function App() {
                         element={<MyOrders />}
                     />
 
-<Route
+                    <Route
                         path="/Management"
                         element={<Management />}
+                    />
+
+                    <Route
+                        path="/StoreAdmin"
+                        element={<StoreAdmin />}
+                    />
+
+                    <Route
+                        path="/StoreOrders"
+                        element={<StoreOrders />}
+                    />
+
+                    <Route
+                        path="/StoreItems"
+                        element={<StoreItems />}
+                    />
+
+                    <Route
+                        path="/RemoveStore"
+                        element={<RemoveStore />}
+                    />
+
+                    <Route
+                        path="/RemoveProduct"
+                        element={<RemoveProduct />}
+                    />
+
+                    <Route
+                        path="/CompleteOrder"
+                        element={<CompleteOrder />}
                     />
 
                     <Route

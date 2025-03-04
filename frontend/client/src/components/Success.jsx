@@ -15,7 +15,7 @@ function App() {
                 <h1 className="text-center mb-10 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-3xl dark:text-white">Η παραγγελεία σας είναι στον δρόμο.</h1>
                 <div className="w-full">
                     <center>
-                    <img src="./pizza.jpg" alt=""/>
+                    <img src="./assets/pizza.jpg" alt=""/>
                     </center>
                 </div>
             </header>

@@ -1,17 +1,5 @@
 import React from "react";
-import { login, cUser, getOrdersUser } from "../actions";
-
-// For complete orders
-const checkOrdersDiv = setInterval(async () => {
-    if (document.getElementById("ordersList")) {
-        // Check if cart in storage is empty
-        if (!cUser) return window.location.replace("/");
-
-        clearInterval(checkOrdersDiv);
-
-        await getOrdersUser();
-    }
-}, 100);
+import { login } from "../utils/actions.js";
 
 function App() {
     return (
@@ -44,7 +32,7 @@ function App() {
                         </details>
                     </div>
                     <div className="navbar-center">
-                        <a href="/" className="btn btn-ghost text-xl"><img src="./logo.png" className="h-10 p-1" alt="Foodnet Logo" />
+                        <a href="/" className="btn btn-ghost text-xl"><img src="./assets/logo.png" className="h-10 p-1" alt="Foodnet Logo" />
                             FoodNet</a>
                     </div>
                     <div className="navbar-end">
@@ -98,7 +86,7 @@ function App() {
 
             <h2 className="text-center py-10 text-3xl font-extrabold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-3xl dark:text-white">Οι παραγγελείες σου</h2>
 
-            <div id="ordersList" className="place-items-center py-16 grid"></div>
+            <div id="ordersList" className="place-items-center py-16 grid gap-8"></div>
 
         </div>
     );

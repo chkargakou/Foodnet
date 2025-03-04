@@ -1,15 +1,5 @@
 import React from "react";
-import { login, port } from "../actions";
-import axios from "axios";
-
-const checkProductsDiv = setInterval(async () => {
-  if (document.getElementById("productsList")) {
-    clearInterval(checkProductsDiv);
-    await axios.get(`http://${window.location.hostname}:${port}/getProducts${window.location.search}`).then(data => {
-      document.getElementById("productsList").innerHTML = `${data.data}`;
-    });
-  }
-}, 100);
+import { login } from "../utils/actions.js";
 
 function App() {
   return (
@@ -42,7 +32,7 @@ function App() {
             </details>
           </div>
           <div className="navbar-center">
-            <a href="/" className="btn btn-ghost text-xl"><img src="./logo.png" className="h-10 p-1" alt="Foodnet Logo" />
+            <a href="/" className="btn btn-ghost text-xl"><img src="./assets/logo.png" className="h-10 p-1" alt="Foodnet Logo" />
               FoodNet</a>
           </div>
           <div className="navbar-end">
