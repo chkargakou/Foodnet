@@ -137,6 +137,9 @@ app.get('/getProductsStore', async (req, res) => {
           <div class="card-body">
             <h2 id="${i}title" class="card-title">${body[i].productname}</h2>
             <p>${body[i].price}€</p>
+            <div class="card-actions justify-end">
+            <button onClick="window.location.href = '/RemoveProduct?StoreName=${req.query.Storename}&ProductName=${body[i].productname}&UUID=${req.query.uuid}'" class="btn btn-primary">Αφαίρεση Προϊόντος</button>
+            </div>
           </div>
         </div>
         `
@@ -152,6 +155,11 @@ app.get('/getOrdersUser', async (req, res) => {
         .get(`http://${process.env.API_IP}:5145/order/getOrdersUser?uuid=${req.query.uuid}`);
 
     if (body.length < 1) return res.send("Δεν υπάρχει καμία παραγγελία.")
+
+    // For sanitizing text
+    function sanitize(s) {
+        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+    }
 
     let orders = "";
     let products = "";
@@ -169,9 +177,9 @@ app.get('/getOrdersUser', async (req, res) => {
             <h2 id="${i}title" class="card-title">${body[i].storeName}</h2>
             ${products}
             <hr/>
-            <p>Διεύθυνση: ${body[i].address}, ${body[i].postNumber}</p>
-            <p>Τηλέφωνο: ${body[i].telNumber}</p>
-            <p>Σημειώσεις για Delivery: <div class="bg-white-100 px-4 py-3 mr-64" role="alert"><p class="text-sm">${body[i].deliveryOrders}</p></div></p>
+            <p>Διεύθυνση: ${sanitize(body[i].address)}, ${sanitize(body[i].postNumber)}</p>
+            <p>Τηλέφωνο: ${sanitize(body[i].telNumber)}</p>
+            <p>Σημειώσεις για Delivery: <div class="bg-white-100 px-4 py-3 mr-64" role="alert"><p class="text-sm">${sanitize(body[i].deliveryOrders)}</p></div></p>
             <p>Κατάσταση Παραγγελίας: ${body[i].isCompleted ? "Ολοκληρωμένη ✅" : "Στον Δρόμο 🚚"}</p>
             <div class="card-actions justify-end">
                 <p>Σύνολο: ${body[i].orderValue}€</p>
@@ -204,6 +212,11 @@ app.get('/getOrdersStore', async (req, res) => {
 
         if (body.length < 1) return res.send("Δεν υπάρχει καμία παραγγελία.")
 
+        // For sanitizing text
+        function sanitize(s) {
+            return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+        }
+
         let orders = "";
         let products = "";
         let completeButton;
@@ -230,9 +243,9 @@ app.get('/getOrdersStore', async (req, res) => {
             <h2 id="order${i}" class="card-title">${body[i].storeName}</h2>
             ${products}
             <hr/>
-            <p>Διεύθυνση: ${body[i].address}, ${body[i].postNumber}</p>
-            <p>Τηλέφωνο: ${body[i].telNumber}</p>
-            <p>Σημειώσεις για Delivery: <div class="bg-white-100 px-4 py-3 mr-64" role="alert"><p class="text-sm">${body[i].deliveryOrders}</p></div></p>
+            <p>Διεύθυνση: ${sanitize(body[i].address)}, ${sanitize(body[i].postNumber)}</p>
+            <p>Τηλέφωνο: ${sanitize(body[i].telNumber)}</p>
+            <p>Σημειώσεις για Delivery: <div class="bg-white-100 px-4 py-3 mr-64" role="alert"><p class="text-sm">${sanitize(body[i].deliveryOrders)}</p></div></p>
             <p>Αριθμός Παραγγελίας: ${body[i].id}</p>
             <p>Κατάσταση Παραγγελίας: ${orderStatus}</p>
             <div class="card-actions justify-end">
@@ -259,9 +272,14 @@ app.post('/register', async (req, res) => {
 
     if (req.body.password != req.body.confirmPass) return res.send("badPass");
 
+    // For sanitizing usernames
+    function sanitize(s) {
+        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+    }
+
     await superagent
         .post(`http://${process.env.API_IP}:5145/register`)
-        .send({ Username: username, Password: password })
+        .send({ Username: sanitize(username), Password: password })
         .set('Accept', 'application/json')
         .then(async registerRes => {
 
@@ -439,6 +457,23 @@ app.post('/addProduct', async (req, res) => {
     }
 });
 
+app.post('/removeProduct', async (req, res) => {
+
+    let isOwner = await superagent.get(`http://${process.env.API_IP}:5145/management/isOwner?uuid=${req.query.ownerUUID}`);
+    isOwner = isOwner._body;
+
+    if (isOwner) {
+        await superagent
+            .post(`http://${process.env.API_IP}:5145/product/removeProduct`)
+            .send(req.query)
+            .set('Accept', 'application/json')
+            .then(r => {
+                console.log("product removed");
+                console.log(req.query);
+                res.send("OK");
+            }).catch(err => res.send({ err }));
+    }
+});
 
 app.post('/removeStore', async (req, res) => {
 
@@ -487,6 +522,25 @@ app.post('/makeAccOwner', async (req, res) => {
 
         await superagent
             .post(`http://${process.env.API_IP}:5145/management/makeaccowner?uuid=${uuid}`)
+            .set('Accept', 'application/json')
+            .then(r => {
+                res.send("OK");
+            }).catch(err => res.send({ err }));
+
+    }
+});
+
+
+app.post('/removeUser', async (req, res) => {
+
+    let isAdmin = await superagent.get(`http://${process.env.API_IP}:5145/management/isAdmin?uuid=${req.body.c}`);
+    isAdmin = isAdmin._body;
+
+    if (isAdmin) {
+
+        await superagent
+            .post(`http://${process.env.API_IP}:5145/Register/removeUser`)
+            .send({ Username: req.body.name })
             .set('Accept', 'application/json')
             .then(r => {
                 res.send("OK");

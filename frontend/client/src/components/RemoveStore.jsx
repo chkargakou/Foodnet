@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-import { isOwner, port, c } from "../utils/actions";
+import { isOwner, port, c } from "../utils/actions.js";
 
 function removeStore() {
     const rDiv = setInterval(async () => {

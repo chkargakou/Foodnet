@@ -1,5 +1,5 @@
 {
-  "name": "foodnet-frontend-react",
+  "name": "foodnet-frontend-react-internal",
   "version": "1.0.0",
   "description": "front-end for foodnet written in react",
   "main": "index.js",

@@ -1,5 +1,5 @@
 import React from "react";
-import { login } from "../utils/actions";
+import { login } from "../utils/actions.js";
 
 function App() {
   return (
@@ -32,7 +32,7 @@ function App() {
             </details>
           </div>
           <div className="navbar-center">
-            <a href="/" className="btn btn-ghost text-xl"><img src="./logo.png" className="h-10 p-1" alt="Foodnet Logo" />
+            <a href="/" className="btn btn-ghost text-xl"><img src="./assets/logo.png" className="h-10 p-1" alt="Foodnet Logo" />
               FoodNet</a>
           </div>
           <div className="navbar-end">
@@ -130,7 +130,7 @@ function App() {
               <div
                 class="sm:w-[564px] w-full sm:h-[646px] h-full sm:bg-gray-100 rounded-3xl sm:border border-gray-200 relative">
                 <img class="sm:mt-5 sm:ml-5 w-full h-full rounded-3xl object-cover"
-                  src="./foodnet-stock.jpg" alt="" />
+                  src="./assets/foodnet-stock.jpg" alt="" />
               </div>
             </div>
           </div>

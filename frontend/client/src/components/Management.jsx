@@ -1,5 +1,5 @@
 import React from "react";
-import { login, makeAccOwner } from "../utils/actions";
+import { login, makeAccOwner, removeUser } from "../utils/actions.js";
 
 function App() {
     return (
@@ -32,7 +32,7 @@ function App() {
                         </details>
                     </div>
                     <div className="navbar-center">
-                        <a href="/" className="btn btn-ghost text-xl"><img src="./logo.png" className="h-10 p-1" alt="Foodnet Logo" />
+                        <a href="/" className="btn btn-ghost text-xl"><img src="./assets/logo.png" className="h-10 p-1" alt="Foodnet Logo" />
                             FoodNet</a>
                     </div>
                     <div className="navbar-end">
@@ -86,12 +86,16 @@ function App() {
 
             <h2 className="text-center py-10 text-3xl font-extrabold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-3xl dark:text-white">Προσθήκη Μαγαζάτορα</h2>
 
-            <div id="addOwnerDiv" className="place-items-center py-16 grid gap-8 columns-3">
-                <label className="input validator">
-                    <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.5" fill="none" stroke="currentColor"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></g></svg>
-                    <input type="input" name="ownerName" required placeholder="Όνομα Χρήστη" pattern="[A-Za-z][A-Za-z0-9\-]*" minLength="3" maxLength="30" title="Μόνο γράμματα, νούμερα και παύλες." />
-                </label>
+            <div id="addOwnerDiv" className="place-items-center py-16 grid gap-8">
+                    <input type="input" name="ownerName" className="input input-primary" required placeholder="Όνομα Χρήστη" pattern="[A-Za-z][A-Za-z0-9\-]*" minLength="3" maxLength="30" title="Μόνο γράμματα, νούμερα και παύλες." />
                 <button onClick={makeAccOwner} className="btn btn-neutral">Προσθήκη</button>
+            </div>
+
+            <h2 className="text-center py-10 text-3xl font-extrabold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-3xl dark:text-white">Αφαίρεση Χρήστη</h2>
+
+            <div id="rmUserDiv" className="place-items-center py-16 grid gap-8">
+                <input type="input" name="userName" className="input input-primary" required placeholder="Όνομα Χρήστη" pattern="[A-Za-z][A-Za-z0-9\-]*" minLength="3" maxLength="30" title="Μόνο γράμματα, νούμερα και παύλες." />
+                <button onClick={removeUser} className="btn btn-neutral">Αφαίρεση</button>
             </div>
 
         </div>

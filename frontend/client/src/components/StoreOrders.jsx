@@ -1,5 +1,5 @@
 import React from "react";
-import { login } from "../utils/actions";
+import { login } from "../utils/actions.js";
 
 function App() {
     return (
@@ -32,7 +32,7 @@ function App() {
                         </details>
                     </div>
                     <div className="navbar-center">
-                        <a href="/" className="btn btn-ghost text-xl"><img src="./logo.png" className="h-10 p-1" alt="Foodnet Logo" />
+                        <a href="/" className="btn btn-ghost text-xl"><img src="./assets/logo.png" className="h-10 p-1" alt="Foodnet Logo" />
                             FoodNet</a>
                     </div>
                     <div className="navbar-end">
@@ -86,7 +86,7 @@ function App() {
 
             <h2 className="text-center py-10 text-3xl font-extrabold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-3xl dark:text-white">Παραγγελείες Μαγαζιού</h2>
 
-            <div id="storeOrdersList" className="place-items-center py-16 mx-72 grid"></div>
+            <div id="storeOrdersList" className="place-items-center py-16 mx-72 grid gap-8"></div>
 
         </div>
     );

@@ -15,6 +15,7 @@ import StoreAdmin from "./components/StoreAdmin";
 import StoreItems from "./components/StoreItems";
 import StoreOrders from "./components/StoreOrders";
 import RemoveStore from "./components/RemoveStore";
+import RemoveProduct from "./components/RemoveProduct";
 import CompleteOrder from "./components/CompleteOrder";
 import MyOrders from "./components/MyOrders";
 import Success from "./components/Success";
@@ -100,7 +101,12 @@ function App() {
                         element={<RemoveStore />}
                     />
 
-<Route
+                    <Route
+                        path="/RemoveProduct"
+                        element={<RemoveProduct />}
+                    />
+
+                    <Route
                         path="/CompleteOrder"
                         element={<CompleteOrder />}
                     />

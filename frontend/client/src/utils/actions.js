@@ -5,6 +5,8 @@ export const port = 8081;
 export let c = decodeURIComponent(getCookie("SessionID"));
 
 // Export username/Get user contents
+
+
 const fetchUserContents = await axios.post(`http://${window.location.hostname}:${port}/getUsername`,
     { c },
     {
@@ -20,7 +22,7 @@ const fetchUserContents = await axios.post(`http://${window.location.hostname}:$
         return { name, content }
     });
 
-let cRes = fetchUserContents;
+const cRes = fetchUserContents;
 export let cUser = cRes.name.name;
 let divContent = cRes.name.content;
 
@@ -92,6 +94,14 @@ export const checkAddOwnerDiv = setInterval(async () => {
     }
 }, 100);
 
+// Check if user is admin in site management 
+export const checkRMOwnerDiv = setInterval(async () => {
+    if (document.getElementById("rmOwnerDiv")) {
+        isAdmin();
+        clearInterval(checkRMOwnerDiv);
+    }
+}, 100);
+
 // Check if user is owner in store management 
 export const checkAddStoreDiv = setInterval(async () => {
     if (document.getElementById("addStoreDiv")) {
@@ -141,9 +151,6 @@ export const checkStoreItemsDiv = setInterval(async () => {
             });
     }
 }, 100);
-
-// Self explanatory
-
 
 // Stores page from the user's side
 export const checkStoresDiv = setInterval(async () => {
@@ -330,6 +337,14 @@ export async function addStore() {
 
     if (!store.StoreName || !store.Location) return alert("Έχεις άδεια κενά στην φόρμα προσθήκης!");
 
+    // For sanitizing text
+    function sanitize(s) {
+        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+    }
+
+    store.StoreName = sanitize(store.StoreName);
+    store.Location = sanitize(store.Location);
+
     await axios.post(`http://${window.location.hostname}:${port}/addStore`,
         store,
         {
@@ -369,6 +384,14 @@ export async function addProduct() {
     if (!product.StoreName) return window.location.replace("/");
     else if (!product.ProductName || !product.ProductPrice) return alert("Έχεις κενά στην φόρμα προσθήκης!");
 
+    // For sanitizing text
+    function sanitize(s) {
+        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+    }
+
+    product.ProductName = sanitize(product.ProductName);
+    product.ProductPrice = sanitize(product.ProductPrice);
+
     await axios.post(`http://${window.location.hostname}:${port}/addProduct`,
         product,
         {
@@ -392,6 +415,8 @@ export async function addProduct() {
 }
 
 export async function makeAccOwner() {
+
+    isAdmin();
 
     let name = document.getElementsByName("ownerName")[0].value;
 
@@ -420,10 +445,35 @@ export async function makeAccOwner() {
                     let res = response.data;
 
                     if (res === "OK") { alert("Προστέθηκε!"); window.location.reload(); }
-                    else
-                        return alert("Error: " + res.err.code);
+                    else { alert("Error: " + res.err.code); return window.location.reload(); }
                 });
 
+        });
+
+
+}
+
+export async function removeUser() {
+
+    isAdmin();
+
+    let name = document.getElementsByName("userName")[0].value;
+
+    await axios.post(`http://${window.location.hostname}:${port}/removeUser`,
+        { name, c },
+        {
+            headers: {
+                "Content-Type": "application/json",
+            },
+            withCredentials: true,
+            credentials: "include",
+        })
+
+        .then(async (response) => {
+            let res = response.data;
+
+            if (res === "OK") { alert("Αφαιρέθηκε!"); window.location.reload(); }
+            else { alert("Error: " + res.err.code); return window.location.reload(); }
         });
 
 
