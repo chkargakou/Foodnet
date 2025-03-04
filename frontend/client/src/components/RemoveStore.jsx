@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-import { isOwner, port, c } from "../utils/actions.js";
+import { isOwner, port, c, host } from "../utils/actions.js";
 
 function removeStore() {
     const rDiv = setInterval(async () => {
@@ -11,7 +11,7 @@ function removeStore() {
             const urlSearchParams = new URLSearchParams(window.location.search);
             const params = Object.fromEntries(urlSearchParams.entries());
 
-            await axios.post(`http://${window.location.hostname}:${port}/removeStore?StoreName=${params.StoreName}&location=${params.location}&ownerUUID=${c}`);
+            await axios.post(`http://${host}:${port}/removeStore?StoreName=${params.StoreName}&location=${params.location}&ownerUUID=${c}`);
 
             return window.location.href = "/storeadmin"
         }
