@@ -1,4 +1,4 @@
-# FoodNet
+# FoodNet 
 An e-food clone made for the course "Special Topics in Software Engineering" at uniWA.
 
 ### This project uses:
