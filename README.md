@@ -32,14 +32,13 @@ API_IP=0.0.0.0
 
 ### Reproduction Steps (Backend/Database)
 1. Clone the repository.
-2. `mysql -u username -p foodnet < foodnet.sql` to create the database (`foodnet.sql` can be found inside `/database/`)
-3. Create a .env file inside the `backend/FoodNetBackend` directory which must contain:
+2. Create Database in mysql`CREATE DATABASE fooodnet;`
+3. `mysql -u username -p foodnet < foodnet.sql` to create the database (`foodnet.sql` can be found inside `/database/`)
+4. Create a .env file inside the `backend/FoodNetBackend` directory which must contain:
 
 `backend/FoodNetBackend/.env`
 ```.env
-DB_CONNECTION_STRING="Server={server address};
-Database=foodnet;User={database username};
-Password={database user password};"
+DB_CONNECTION_STRING="Server={server address};Database=foodnet;User={database username};Password={database user password};"
 ENCRYPTION_KEY="{32 char AES key}"
 ```
 
