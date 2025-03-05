@@ -43,7 +43,7 @@ Password={database user password};"
 ENCRYPTION_KEY="{32 char AES key}"
 ```
 
-4. Inside of the backend/FoodNetBackEnd directory.
+4. Inside of the `backend/FoodNetBackEnd` directory.
 	- run `dotnet restore`.
 	- run `dotnet build`.
 	- run `dotnet run`.
