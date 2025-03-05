@@ -80,9 +80,9 @@ app.get('/getStoresOwned', async (req, res) => {
             <h2 id="${i}title" class="card-title">${body[i].name}</h2>
             <p>${body[i].location}</p>
             <div class="card-actions justify-end">
-            <button onClick="window.location.href = '/StoreOrders?storeName=${body[i].name}'" class="btn btn-primary">Προβολή Παραγγελιών</button>
-            <button onClick="window.location.href = '/StoreItems?storeName=${body[i].name}'" class="btn btn-primary">Προσθαφαίρεση Προϊόντων</button>
-            <button onClick="window.location.href = '/RemoveStore?StoreName=${body[i].name}&location=${body[i].location}'" class="btn btn-primary">Αφαίρεση Μαγαζιού</button>
+            <button onClick="window.location.href = '/StoreOrders?storeName=${body[i].name.replace("'", "\\'")}'" class="btn btn-primary">Προβολή Παραγγελιών</button>
+            <button onClick="window.location.href = '/StoreItems?storeName=${body[i].name.replace("'", "\\'")}'" class="btn btn-primary">Προσθαφαίρεση Προϊόντων</button>
+            <button onClick="window.location.href = '/RemoveStore?StoreName=${body[i].name.replace("'", "\\'")}&location=${body[i].location.replace("'", "\\'")}'" class="btn btn-primary">Αφαίρεση Μαγαζιού</button>
             </div>
           </div>
         </div>
