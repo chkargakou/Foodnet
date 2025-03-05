@@ -1,6 +1,7 @@
 import axios from "axios";
 
 // Get host and port from .env at "client/.env"
+export const protocol = process.env.REACT_APP_PROTOCOL;
 export const host = process.env.REACT_APP_HOST;
 export const port = process.env.REACT_APP_PORT;
 
@@ -8,7 +9,7 @@ export const port = process.env.REACT_APP_PORT;
 export let c = decodeURIComponent(getCookie("SessionID"));
 
 // Export username/Get user contents
-const fetchUserContents = await axios.post(`http://${host}:${port}/getUsername`,
+const fetchUserContents = await axios.post(`${protocol}://${host}:${port}/getUsername`,
     { c },
     {
         headers: {
@@ -48,7 +49,7 @@ export const checkUser = setInterval(async () => {
       <div class="dropdown dropdown-end">
     <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
         <div class="indicator">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+            <svg xmlns="${protocol}://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -76,13 +77,13 @@ export const checkUser = setInterval(async () => {
 }, 100);
 
 async function isAdmin() {
-    await axios.get(`http://${host}:${port}/isAdmin?uuid=${c}`).then((res) => {
+    await axios.get(`${protocol}://${host}:${port}/isAdmin?uuid=${c}`).then((res) => {
         if (!res.data) return window.location.replace("/");
     });
 }
 
 export async function isOwner() {
-    await axios.get(`http://${host}:${port}/isOwner?uuid=${c}`).then((res) => {
+    await axios.get(`${protocol}://${host}:${port}/isOwner?uuid=${c}`).then((res) => {
         if (!res.data) return window.location.replace("/");
     });
 }
@@ -116,7 +117,7 @@ export const checkUserStoresDiv = setInterval(async () => {
     if (document.getElementById("userStoresList")) {
         isOwner();
         clearInterval(checkUserStoresDiv);
-        await axios.get(`http://${host}:${port}/getStoresOwned?uuid=${c}`)
+        await axios.get(`${protocol}://${host}:${port}/getStoresOwned?uuid=${c}`)
             .then(data => {
                 document.getElementById("userStoresList").innerHTML = `${data.data}`;
             });
@@ -131,7 +132,7 @@ export const checkStoreOrdersDiv = setInterval(async () => {
         const urlSearchParams = new URLSearchParams(window.location.search);
         const params = Object.fromEntries(urlSearchParams.entries());
 
-        await axios.get(`http://${host}:${port}/getOrdersStore?Storename=${params.storeName}&uuid=${c}`)
+        await axios.get(`${protocol}://${host}:${port}/getOrdersStore?Storename=${params.storeName}&uuid=${c}`)
             .then(data => {
                 document.getElementById("storeOrdersList").innerHTML = `${data.data}`;
             });
@@ -146,7 +147,7 @@ export const checkStoreItemsDiv = setInterval(async () => {
         const urlSearchParams = new URLSearchParams(window.location.search);
         const params = Object.fromEntries(urlSearchParams.entries());
 
-        await axios.get(`http://${host}:${port}/getProductsStore?Storename=${params.storeName}&uuid=${c}`)
+        await axios.get(`${protocol}://${host}:${port}/getProductsStore?Storename=${params.storeName}&uuid=${c}`)
             .then(data => {
                 document.getElementById("storeItemsList").innerHTML = `${data.data}`;
             });
@@ -157,7 +158,7 @@ export const checkStoreItemsDiv = setInterval(async () => {
 export const checkStoresDiv = setInterval(async () => {
     if (document.getElementById("storesList")) {
         clearInterval(checkStoresDiv);
-        await axios.get(`http://${host}:${port}/getStores`).then(data => {
+        await axios.get(`${protocol}://${host}:${port}/getStores`).then(data => {
             document.getElementById("storesList").innerHTML = `${data.data}`;
         });
     }
@@ -167,7 +168,7 @@ export const checkStoresDiv = setInterval(async () => {
 export const checkProductsDiv = setInterval(async () => {
     if (document.getElementById("productsList")) {
         clearInterval(checkProductsDiv);
-        await axios.get(`http://${host}:${port}/getProducts${window.location.search}`).then(data => {
+        await axios.get(`${protocol}://${host}:${port}/getProducts${window.location.search}`).then(data => {
             document.getElementById("productsList").innerHTML = `${data.data}`;
         });
     }
@@ -307,7 +308,7 @@ export async function addOrder() {
 
     if (!order.Address || !order.TelNumber || !order.PostNumber) return alert("Έχεις άδεια κενά στην φόρμα παραγγελίας!");
 
-    await axios.post(`http://${host}:${port}/addOrder`,
+    await axios.post(`${protocol}://${host}:${port}/addOrder`,
         order,
         {
             headers: {
@@ -346,7 +347,7 @@ export async function addStore() {
     store.StoreName = sanitize(store.StoreName);
     store.Location = sanitize(store.Location);
 
-    await axios.post(`http://${host}:${port}/addStore`,
+    await axios.post(`${protocol}://${host}:${port}/addStore`,
         store,
         {
             headers: {
@@ -393,7 +394,7 @@ export async function addProduct() {
     product.ProductName = sanitize(product.ProductName);
     product.ProductPrice = sanitize(product.ProductPrice);
 
-    await axios.post(`http://${host}:${port}/addProduct`,
+    await axios.post(`${protocol}://${host}:${port}/addProduct`,
         product,
         {
             headers: {
@@ -421,7 +422,7 @@ export async function makeAccOwner() {
 
     let name = document.getElementsByName("ownerName")[0].value;
 
-    await axios.post(`http://${host}:${port}/getUUID`,
+    await axios.post(`${protocol}://${host}:${port}/getUUID`,
         { name, c },
         {
             headers: {
@@ -433,7 +434,7 @@ export async function makeAccOwner() {
         .then(async (response) => {
             name = response.data;
 
-            await axios.post(`http://${host}:${port}/makeAccOwner`,
+            await axios.post(`${protocol}://${host}:${port}/makeAccOwner`,
                 { name, c },
                 {
                     headers: {
@@ -460,7 +461,7 @@ export async function removeUser() {
 
     let name = document.getElementsByName("userName")[0].value;
 
-    await axios.post(`http://${host}:${port}/removeUser`,
+    await axios.post(`${protocol}://${host}:${port}/removeUser`,
         { name, c },
         {
             headers: {
@@ -481,7 +482,7 @@ export async function removeUser() {
 }
 
 export const getOrdersUser = async () => {
-    await axios.get(`http://${host}:${port}/getOrdersUser?uuid=${c}`).then((res) => {
+    await axios.get(`${protocol}://${host}:${port}/getOrdersUser?uuid=${c}`).then((res) => {
         document.getElementById("ordersList").innerHTML = res.data;
     });
 };
@@ -503,7 +504,7 @@ export const register = async (e) => {
         return new Promise(resolve => setTimeout(resolve, ms));
     };
 
-    await axios.post(`http://${host}:${port}/register`,
+    await axios.post(`${protocol}://${host}:${port}/register`,
         {
             username: username,
             password: password,
@@ -545,7 +546,7 @@ export const login = async (e) => {
     let username = document.getElementsByName("username")[0].value;
     let password = document.getElementsByName("password")[0].value;
 
-    await axios.post(`http://${host}:${port}/login`,
+    await axios.post(`${protocol}://${host}:${port}/login`,
         {
             username: username,
             password: password,
