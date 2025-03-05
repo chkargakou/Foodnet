@@ -10,7 +10,7 @@ Node.js, Express.js, React, MySQL, Dapper, Tailwind CSS, .NET Core.
 - Serve as a middleman for holding delivery orders for stores.
 - Make seemless charges on each sale by increase orders to a point it's a mere negligible fee.
 
-### Reproduction Steps (frontend)
+### Reproduction Steps (Frontend/Internals)
 1. Clone the repository.
 2. Create files `frontend/server/.env` and `frontend/client/.env`, they **must** contain the following inside:
 
@@ -29,3 +29,21 @@ API_IP=0.0.0.0
 4. Run `npm i` at `frontend/client` and `frontend/server`.
 5. Run `npm run build` at `frontend/client`, then using **serve** (npm i -g serve) `serve -s build`
 6. Either run `node index.js` at `frontend/server`, or use **pm2** (npm i -g pm2) `pm2 start index.js --name server`. (any process manager will do for that matter)
+
+### Reproduction Steps (Backend/Database)
+1. Clone the repository.
+2. `mysql -u username -p foodnet < foodnet.sql` to create the database (`foodnet.sql` can be found inside `/database/`)
+3. Create a .env file inside the `backend/FoodNetBackend` directory which must contain:
+
+`backend/FoodNetBackend/.env`
+```.env
+DB_CONNECTION_STRING="Server={server address};
+Database=foodnet;User={database username};
+Password={database user password};"
+ENCRYPTION_KEY="{32 char AES key}"
+```
+
+4. Inside of the backend/FoodNetBackEnd directory.
+	- run `dotnet restore`.
+	- run `dotnet build`.
+	- run `dotnet run`.
