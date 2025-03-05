@@ -13,7 +13,7 @@ function removeStore() {
 
             await axios.post(`${protocol}://${host}:${port}/removeStore?StoreName=${params.StoreName}&location=${params.location}&ownerUUID=${c}`);
 
-            return window.history.back()
+            return window.location.href = `/storeadmin`;
         }
     }, 100);
 }

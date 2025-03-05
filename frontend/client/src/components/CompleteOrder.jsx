@@ -13,7 +13,7 @@ function completeOrder() {
 
             await axios.post(`${protocol}://${host}:${port}/completeOrder?id=${params.id}&ownerUUID=${c}`);
 
-            return window.history.back()
+            return window.location.href = "/storeadmin";
         }
     }, 100);
 }
