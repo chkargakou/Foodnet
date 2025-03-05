@@ -80,9 +80,9 @@ app.get('/getStoresOwned', async (req, res) => {
             <h2 id="${i}title" class="card-title">${body[i].name}</h2>
             <p>${body[i].location}</p>
             <div class="card-actions justify-end">
-            <button onClick="window.location.href = '/StoreOrders?storeName=${body[i].name}'" class="btn btn-primary">Προβολή Παραγγελιών</button>
-            <button onClick="window.location.href = '/StoreItems?storeName=${body[i].name}'" class="btn btn-primary">Προσθαφαίρεση Προϊόντων</button>
-            <button onClick="window.location.href = '/RemoveStore?StoreName=${body[i].name}&location=${body[i].location}'" class="btn btn-primary">Αφαίρεση Μαγαζιού</button>
+            <button onClick="window.location.href = '/StoreOrders?storeName=${body[i].name.replace("'", "\\'")}'" class="btn btn-primary">Προβολή Παραγγελιών</button>
+            <button onClick="window.location.href = '/StoreItems?storeName=${body[i].name.replace("'", "\\'")}'" class="btn btn-primary">Προσθαφαίρεση Προϊόντων</button>
+            <button onClick="window.location.href = '/RemoveStore?StoreName=${body[i].name.replace("'", "\\'")}&location=${body[i].location.replace("'", "\\'")}'" class="btn btn-primary">Αφαίρεση Μαγαζιού</button>
             </div>
           </div>
         </div>
@@ -107,7 +107,7 @@ app.get('/getProducts', async (req, res) => {
             <h2 id="${i}title" class="card-title">${body[i].productname}</h2>
             <p>${body[i].price}€</p>
             <div class="card-actions justify-end">
-                <button id="${i}button" onClick="{(() => { let cart = localStorage.getItem('myCart') || ''; localStorage.setItem('myCart', cart + '${body[i].productname}|${body[i].price}|${req.query.name},'); document.location.reload(true) })() }" class="btn btn-primary">+1</button>
+                <button id="${i}button" onClick="{(() => { let cart = localStorage.getItem('myCart') || ''; localStorage.setItem('myCart', cart + '${body[i].productname.replace("'", "\\'")}|${body[i].price}|${req.query.name.replace("'", "\\'")},'); document.location.reload(true) })() }" class="btn btn-primary">+1</button>
             </div>
           </div>
         </div>
@@ -138,7 +138,7 @@ app.get('/getProductsStore', async (req, res) => {
             <h2 id="${i}title" class="card-title">${body[i].productname}</h2>
             <p>${body[i].price}€</p>
             <div class="card-actions justify-end">
-            <button onClick="window.location.href = '/RemoveProduct?StoreName=${req.query.Storename}&ProductName=${body[i].productname}&UUID=${req.query.uuid}'" class="btn btn-primary">Αφαίρεση Προϊόντος</button>
+            <button onClick="window.location.href = '/RemoveProduct?StoreName=${req.query.Storename.replace("'", "\\'")}&ProductName=${body[i].productname.replace("'", "\\'")}&UUID=${req.query.uuid}'" class="btn btn-primary">Αφαίρεση Προϊόντος</button>
             </div>
           </div>
         </div>

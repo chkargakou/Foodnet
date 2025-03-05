@@ -215,8 +215,8 @@ export const checkCartDiv = setInterval(async () => {
             <p>x${unique[i, "count"]}</p>
             <div class="card-actions justify-end">
                 <p>${Math.round(unique[i, "cost"] * 100) / 100}€</p>
-                <button id="${i}button" onClick="{(() => { let cart = localStorage.getItem('myCart') || ''; localStorage.setItem('myCart', cart + '${unique[i]}|${unique[i, 'singleCost']}|${storeName},'); document.location.reload(true) })() }" class="btn btn-primary">+1</button>
-                <button id="${i}button" onClick="{(() => { let cart = localStorage.getItem('myCart'); localStorage.setItem('myCart', cart.replace('${unique[i]}|${unique[i, 'singleCost']}|${storeName},', '')); document.location.reload(true) })() }" class="btn btn-primary">-1</button>
+                <button id="${i}button" onClick="{(() => { let cart = localStorage.getItem('myCart') || ''; localStorage.setItem('myCart', cart + '${unique[i].replace("'", "\\'")}|${unique[i, 'singleCost']}|${storeName.replace("'", "\\'")},'); document.location.reload(true) })() }" class="btn btn-primary">+1</button>
+                <button id="${i}button" onClick="{(() => { let cart = localStorage.getItem('myCart'); localStorage.setItem('myCart', cart.replace('${unique[i].replace("'", "\\'")}|${unique[i, 'singleCost']}|${storeName.replace("'", "\\'")},', '')); document.location.reload(true) })() }" class="btn btn-primary">-1</button>
             </div>
           </div>
         </div>`;
@@ -250,7 +250,7 @@ export const getCart = () => {
 
     // Reset cart in case of store change
     if (items.length > 1 && (items[items.length - 2].split("|")[2] !== items[items.length - 1].split("|")[2])) {
-        localStorage.setItem('myCart', `${items[items.length - 1]},`);
+        localStorage.setItem('myCart', `${items[items.length - 1].replace("'", "\\'")},`);
     }
 
     let total = 0;
