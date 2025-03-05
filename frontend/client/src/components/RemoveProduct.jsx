@@ -13,7 +13,7 @@ function removeProduct() {
 
             await axios.post(`${protocol}://${host}:${port}/removeProduct?StoreName=${params.StoreName}&ProductName=${params.ProductName}&ownerUUID=${c}`);
 
-            return window.history.back()
+            return window.location.href = `/StoreItems?storeName=${params.StoreName}`;
         }
     }, 100);
 }
