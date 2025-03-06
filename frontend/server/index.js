@@ -292,8 +292,12 @@ app.post('/register', async (req, res) => {
                     .then(r => {
                         let userCookie = `${r._body.uuid}`;
 
-                        res.cookie("SessionID", userCookie, { maxAge: 120 * 60 * 1000 })
-                        return res.sendStatus(200);
+                        var now = new Date();
+                        var time = now.getTime();
+                        var expireTime = time + 120 * 60 * 1000;
+                        now.setTime(expireTime);
+
+                        return res.send(`SessionID=${userCookie};expires=${now.toUTCString()};path=/`);
                     }).catch(err => res.send({ err }));
 
             }
@@ -323,8 +327,12 @@ app.post('/login', async (req, res) => {
                     .then(async r => {
                         let userCookie = `${r._body.uuid}`;
 
-                        res.cookie("SessionID", userCookie, { maxAge: 120 * 60 * 1000 })
-                        return res.sendStatus(200);
+                        var now = new Date();
+                        var time = now.getTime();
+                        var expireTime = time + 120 * 60 * 1000;
+                        now.setTime(expireTime);
+
+                        return res.send(`SessionID=${userCookie};expires=${now.toUTCString()};path=/`);
                     }).catch(err => res.send({ err }));
 
             }

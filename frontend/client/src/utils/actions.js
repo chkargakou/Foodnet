@@ -520,8 +520,9 @@ export const register = async (e) => {
         .then(async (response) => {
             let res = response.data;
 
-            if (res === "OK") return window.location.href = "/"
-            else if (res === "badPass") {
+            if (res.err) {
+                return alert("User already exists.");
+            } else if (res === "badPass") {
                 // fade in
                 document.getElementById("passErr").classList.remove("hidden");
                 document.getElementById("passErr").classList.add("err-visible");
@@ -531,12 +532,12 @@ export const register = async (e) => {
                 document.getElementById("passErr").classList.add("err-hidden");
                 document.getElementById("passErr").classList.remove("err-visible");
                 return;
-            } else if (res.err.status !== undefined) {
+            } else if (res.err && res.err.status !== undefined) {
                 return alert("Error: " + res.err.response.text);
-            } else if (res.err) {
-                return alert("Error: " + res.err.code);
+            } else {
+                document.cookie = res;
+                return window.location.href = "/"
             }
-
         });
 };
 
@@ -561,11 +562,14 @@ export const login = async (e) => {
         .then(async (response) => {
             let res = response.data;
 
-            if (res === "OK") return window.location.href = "/"
+            if (res.err) {
+                return alert("Wrong username or password.");
+            }
             else if (res.err && res.err.status !== undefined) {
                 return alert("Error: " + res.err.response.text);
-            } else if (res.err) {
-                return alert("Error: " + res.err.code);
+            } else {
+                document.cookie = res;
+                return window.location.href = "/"
             }
 
         });
