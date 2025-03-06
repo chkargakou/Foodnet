@@ -104,8 +104,8 @@ server {
 }
 ```
 3. Install Certbot and its NGINX extension and run either:
-	- `sudo certbot certonly --nginx --preferred-challenges dns -d example.com -d api.example.com`
-	- `sudo certbot certonly --nginx --preferred-challenges dns -d example.com` (if you plan on hosting the API on localhost)
+	- `sudo certbot certonly --nginx -d example.com -d api.example.com`
+	- `sudo certbot certonly --nginx -d example.com` (if you plan on hosting the API on localhost)
 	
 4. Use either ufw or iptables to open the following ports:
 - 3000/tcp
