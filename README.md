@@ -48,4 +48,4 @@ ENCRYPTION_KEY="{32 char AES key}"
 	- run `dotnet run`.
 
 ### Production
-Check the [prod branch](https://github.com/chkargakou/Foodnet/tree/prod).
+Check the README at [prod branch](https://github.com/chkargakou/Foodnet/tree/prod).
