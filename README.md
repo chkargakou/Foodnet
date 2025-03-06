@@ -46,3 +46,6 @@ ENCRYPTION_KEY="{32 char AES key}"
 	- run `dotnet restore`.
 	- run `dotnet build`.
 	- run `dotnet run`.
+
+### Production
+Check the [prod branch](https://github.com/chkargakou/Foodnet/tree/prod).
