@@ -2,7 +2,7 @@
 # FoodNet
 The following README is used for hosting FoodNet on a proper VPS or any other computing solution.
 
-![foodnet-preview](https://cdn.discordapp.com/attachments/1223657359008731177/1364937022774579311/foodnet.png?ex=680b7c29&is=680a2aa9&hm=7d75a404c32e8a51c0e4cd3f6cc0ec35cf96de960e917e255ef6dc43c6efee70&)  
+![foodnet-preview](https://i.imgur.com/gvo13a8.png)  
 
 ### Reproduction Steps (Frontend/Internals)
 
