@@ -1,7 +1,7 @@
 # FoodNet 
 An e-food clone made for the course "Special Topics in Software Engineering" at uniWA.
 
-![foodnet-preview](https://i.imgur.com/gvo13a8.png) 
+![foodnet-preview](https://chrysa.eu/assets/unsorted/foodnet.png) 
 
 ### This project uses:
 Node.js, Express.js, React, MySQL, Dapper, Tailwind CSS, .NET Core. 
