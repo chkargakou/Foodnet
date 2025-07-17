@@ -2,7 +2,7 @@
 # FoodNet
 The following README is used for hosting FoodNet on a proper VPS or any other computing solution.
 
-![foodnet-preview](https://i.imgur.com/gvo13a8.png)  
+![foodnet-preview](https://chrysa.eu/assets/unsorted/foodnet.png)  
 
 ### Reproduction Steps (Frontend/Internals)
 
